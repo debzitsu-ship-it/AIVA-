@@ -21,17 +21,12 @@ runCatching {
         .writeText("84831b9409646161da1d3268a0436ddba1bbb494\n")
     val platforms = java.io.File(sdk, "platforms").list()?.sorted()?.joinToString(",") ?: "none"
     val buildTools = java.io.File(sdk, "build-tools").list()?.sorted()?.joinToString(",") ?: "none"
+    val msg = "sdk=${sdk.absolutePath}; exists=${sdk.exists()}; platforms=$platforms; build-tools=$buildTools; ANDROID_HOME=${System.getenv("ANDROID_HOME")}; ANDROID_SDK_ROOT=${System.getenv("ANDROID_SDK_ROOT")}"
+    println("::notice title=Android SDK::$msg")
+    println("::warning title=Android SDK::$msg")
     val dumpDir = java.io.File(rootDir, "aiva-ui/build/outputs/apk/debug")
     dumpDir.mkdirs()
-    java.io.File(dumpDir, "aiva-ui-debug.apk").writeText(
-        "AIVA SDK diagnostic\n" +
-            "sdk.dir=${sdk.absolutePath}\n" +
-            "exists=${sdk.exists()}\n" +
-            "platforms=$platforms\n" +
-            "build-tools=$buildTools\n" +
-            "ANDROID_HOME=${System.getenv("ANDROID_HOME")}\n" +
-            "ANDROID_SDK_ROOT=${System.getenv("ANDROID_SDK_ROOT")}\n"
-    )
+    java.io.File(dumpDir, "aiva-ui-debug.apk").writeText("AIVA SDK diagnostic\n$msg\n")
 }
 
 
