@@ -2,6 +2,7 @@ package com.aiva.core.action
 
 import com.aiva.core.action.Action
 import com.aiva.core.action.Target
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,7 +15,7 @@ class ActionTest {
     @Test
     fun testActionSerialization() {
         val tap = Action.Tap(Target(text = "Settings", resourceId = "com.android.settings:id/button"))
-        val jsonStr = json.encodeToString(tap)
+        val jsonStr = json.encodeToString(Action.serializer(), tap)
         val decoded = json.decodeFromString(Action.serializer(), jsonStr)
         assertEquals(tap, decoded)
     }
@@ -45,7 +46,7 @@ class ActionTest {
         )
         
         actions.forEach { action ->
-            val jsonStr = json.encodeToString(action)
+            val jsonStr = json.encodeToString(Action.serializer(), action)
             val decoded = json.decodeFromString(Action.serializer(), jsonStr)
             assertEquals(action, decoded, "Failed for ${action::class.simpleName}")
         }

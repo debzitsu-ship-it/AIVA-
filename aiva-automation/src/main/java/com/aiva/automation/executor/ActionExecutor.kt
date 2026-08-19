@@ -81,9 +81,9 @@ class ActionExecutor @Inject constructor(
         return ActionResult(success = false, message = "Failed after $maxRetries attempts: $lastError")
     }
     
-    fun executeAll(actions: List<Action>): List<ActionResult> {
+    suspend fun executeAll(actions: List<Action>): List<ActionResult> {
         val results = mutableListOf<ActionResult>()
-        
+
         for (action in actions) {
             val result = execute(action)
             results.add(result)
@@ -110,7 +110,11 @@ class ActionExecutor @Inject constructor(
                 else ValidationResult(false, "Package name required")
             is Action.OpenUrl -> if (action.url.isNotBlank() && (action.url.startsWith("http") || action.url.startsWith("https"))) ValidationResult(true)
                 else ValidationResult(false, "Valid URL required")
-            is Action.Tap, is Action.DoubleTap, is Action.LongPress -> if (action.target.hasAnyCriteria()) ValidationResult(true)
+            is Action.Tap -> if (action.target.hasAnyCriteria()) ValidationResult(true)
+                else ValidationResult(false, "Target criteria required for tap")
+            is Action.DoubleTap -> if (action.target.hasAnyCriteria()) ValidationResult(true)
+                else ValidationResult(false, "Target criteria required for tap")
+            is Action.LongPress -> if (action.target.hasAnyCriteria()) ValidationResult(true)
                 else ValidationResult(false, "Target criteria required for tap")
             is Action.Swipe -> ValidationResult(true)
             is Action.Scroll -> ValidationResult(true)
@@ -171,12 +175,14 @@ class ActionExecutor @Inject constructor(
         val newState = observeScreen()
         
         // Try to find target again with relaxed criteria
-        if (action is Action.Tap || action is Action.DoubleTap || action is Action.LongPress) {
-            val relaxedTarget = relaxTarget(action.target)
-            if (relaxedTarget != action.target) {
-                val recoveredAction = action.copy(target = relaxedTarget)
-                return accessibilityController.executeAction(recoveredAction)
-            }
+        val recovered = when (action) {
+            is Action.Tap -> action.copy(target = relaxTarget(action.target))
+            is Action.DoubleTap -> action.copy(target = relaxTarget(action.target))
+            is Action.LongPress -> action.copy(target = relaxTarget(action.target))
+            else -> null
+        }
+        if (recovered != null && recovered != action) {
+            return accessibilityController.executeAction(recovered)
         }
         
         return ActionResult(success = false, message = "Recovery failed: $error")

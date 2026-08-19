@@ -135,7 +135,7 @@ class IntentClassifier @Inject constructor(
                 targetApp = parsed.targetApp
             )
         } catch (e: Exception) {
-            fallbackClassification(originalQuery)
+            return fallbackClassification(originalQuery)
         }
     }
     
@@ -163,6 +163,7 @@ class IntentClassifier @Inject constructor(
         }
     }
     
+    @kotlinx.serialization.Serializable
     private data class ClassificationResult(
         val type: String,
         val confidence: Float,

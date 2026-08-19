@@ -16,7 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PermissionManager @Inject constructor(
-    private val context: Context
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context
 ) {
     
     private val _permissionStates = MutableStateFlow<Map<String, PermissionState>>(emptyMap())
@@ -63,7 +63,7 @@ class PermissionManager @Inject constructor(
         SpecialPermissionInfo(
             type = SpecialPermission.PICTURE_IN_PICTURE,
             rationale = "Required for persistent floating window",
-            settingsAction = Settings.ACTION_PICTURE_IN_PICTURE_SETTINGS,
+            settingsAction = Settings.ACTION_SETTINGS,
             minSdk = Build.VERSION_CODES.O
         ),
         SpecialPermissionInfo(

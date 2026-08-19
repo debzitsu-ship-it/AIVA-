@@ -4,13 +4,6 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
     }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.android.application" || requested.id.id == "com.android.library" || requested.id.id == "org.jetbrains.kotlin.android") {
-                useModule("com.android.tools.build:gradle:8.5.0")
-            }
-        }
-    }
 }
 
 dependencyResolutionManagement {

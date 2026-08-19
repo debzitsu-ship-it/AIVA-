@@ -3,6 +3,7 @@ package com.aiva.core.observation
 import com.aiva.core.observation.DetectionCategory
 import com.aiva.core.observation.NormalizedBounds
 import com.aiva.core.observation.VisionDetection
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals

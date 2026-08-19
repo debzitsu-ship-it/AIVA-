@@ -36,10 +36,7 @@ class ModelRouter @Inject constructor(
         intent: Intent,
         enabledModelIds: Set<String>
     ): List<ModelInfo> {
-        val taskType = when {
-            intent.type == IntentType.COMPLEX_REASONING -> TaskType.MULTI_MODEL_FUSION
-            else -> intentTypeToTaskType(intent.type)
-        }
+        val taskType = intentTypeToTaskType(intent.type)
         return modelRegistry.getModelsForTask(taskType, enabledModelIds)
     }
     
@@ -58,7 +55,6 @@ class ModelRouter @Inject constructor(
             IntentType.SCREEN_ANALYSIS -> TaskType.SCREEN_VISION
             IntentType.GAME_CONTROL -> TaskType.REAL_TIME_GAME
             IntentType.QUIZ -> TaskType.QUIZ
-            IntentType.FORM_FILL -> TaskType.FORM_FILL
         }
     }
 }

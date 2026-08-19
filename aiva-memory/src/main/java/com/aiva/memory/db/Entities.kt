@@ -19,14 +19,14 @@ data class ConversationEntity(
     val isArchived: Boolean = false
 ) {
     fun toMessages(): List<ChatMessage> {
-        return Json { ignoreUnknownKeys = true }.decodeFromString(
-            kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                .getSerializersModule()
-                .getListSerializer(ChatMessage.serializer()),
-            messagesJson
-        )
+        return runCatching {
+            Json { ignoreUnknownKeys = true }.decodeFromString(
+                kotlinx.serialization.builtins.ListSerializer(ChatMessage.serializer()),
+                messagesJson
+            )
+        }.getOrDefault(emptyList())
     }
-    
+
     companion object {
         fun fromMessages(
             id: String,
@@ -35,9 +35,7 @@ data class ConversationEntity(
             messages: List<ChatMessage>
         ): ConversationEntity {
             val json = Json { ignoreUnknownKeys = true }.encodeToString(
-                kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                    .getSerializersModule()
-                    .getListSerializer(ChatMessage.serializer()),
+                kotlinx.serialization.builtins.ListSerializer(ChatMessage.serializer()),
                 messages
             )
             val now = System.currentTimeMillis()

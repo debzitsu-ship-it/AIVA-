@@ -160,7 +160,7 @@ class GameProfileRepository @Inject constructor(
     }
     
     suspend fun setActive(id: String) {
-        dao.getAll().first().forEach { profile ->
+        kotlinx.coroutines.flow.first(dao.getAll()).forEach { profile ->
             dao.update(profile.copy(isActive = profile.id == id))
         }
     }

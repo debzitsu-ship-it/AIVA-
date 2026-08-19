@@ -5,6 +5,7 @@ import com.aiva.core.model.ChatMessage
 import com.aiva.core.model.ModelInfo
 import com.aiva.core.model.ReasoningLevel
 import com.aiva.core.model.SpeedProfile
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals

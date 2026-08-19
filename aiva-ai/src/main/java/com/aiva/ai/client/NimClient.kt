@@ -2,21 +2,19 @@ package com.aiva.ai.client
 
 import com.aiva.core.model.ChatCompletionRequest
 import com.aiva.core.model.ChatCompletionResponse
+import com.aiva.core.model.ChatMessage
+import com.aiva.core.model.StreamChoice
 import com.aiva.core.model.StreamChunk
 import com.aiva.core.security.ApiKeyEntry
 import com.aiva.core.util.KeyStoreManager
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,18 +23,21 @@ import javax.inject.Singleton
 class NimClient @Inject constructor() {
     private var retrofit: Retrofit? = null
     private var currentApiKey: String? = null
-    
-    private val json = Json { ignoreUnknownKeys = true }
-    
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
+
     private fun getOrCreateRetrofit(apiKey: String): Retrofit {
         if (retrofit != null && currentApiKey == apiKey) {
             return retrofit!!
         }
-        
+
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BASIC
         }
-        
+
         val okHttpClient = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
@@ -49,51 +50,48 @@ class NimClient @Inject constructor() {
                 chain.proceed(request)
             }
             .build()
-        
+
         retrofit = Retrofit.Builder()
             .baseUrl("https://integrate.api.nvidia.com/v1/")
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
-        
+
         currentApiKey = apiKey
         return retrofit!!
     }
-    
+
     suspend fun createCompletion(
         apiKeyEntry: ApiKeyEntry,
         request: ChatCompletionRequest
     ): ChatCompletionResponse {
         val decryptedKey = KeyStoreManager.decryptString(apiKeyEntry.encryptedKey)
         val service = getOrCreateRetrofit(decryptedKey).create(NimApiService::class.java)
-        return service.createCompletion(request)
+        return service.createCompletion(request.copy(stream = false))
     }
-    
+
     fun createStreamCompletion(
         apiKeyEntry: ApiKeyEntry,
         request: ChatCompletionRequest
-    ): Flow<StreamChunk> {
-        val decryptedKey = KeyStoreManager.decryptString(apiKeyEntry.encryptedKey)
-        val service = getOrCreateRetrofit(decryptedKey).create(NimApiService::class.java)
-        
-        return callbackFlow {
-            val job = runInterruptible {
-                service.createStreamCompletion(request)
-                    .catch { e ->
-                        // Handle stream errors
-                    }
-                    .collect { chunk ->
-                        trySend(chunk)
-                    }
-            }
-            awaitClose { job.cancel() }
-        }.onCompletion { cause ->
-            if (cause != null) {
-                // Log error but don't expose API key
-            }
-        }
+    ): Flow<StreamChunk> = flow {
+        val response = createCompletion(apiKeyEntry, request)
+        val content = response.choices.firstOrNull()?.message?.content.orEmpty()
+        emit(
+            StreamChunk(
+                id = response.id,
+                choices = listOf(
+                    StreamChoice(
+                        index = 0,
+                        delta = ChatMessage(role = "assistant", content = content),
+                        finishReason = "stop"
+                    )
+                ),
+                created = response.created,
+                model = response.model
+            )
+        )
     }
-    
+
     fun invalidateCache() {
         retrofit = null
         currentApiKey = null

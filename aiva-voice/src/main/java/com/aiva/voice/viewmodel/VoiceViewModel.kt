@@ -2,14 +2,16 @@ package com.aiva.voice.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aiva.core.security.ApiKeyManager
+import com.aiva.security.ApiKeyManager
 import com.aiva.core.voice.VoiceConfig
 import com.aiva.core.voice.VoiceState
 import com.aiva.voice.service.VoiceInputService
 import com.aiva.voice.service.VoiceOutputService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,7 +49,7 @@ class VoiceViewModel @Inject constructor(
             inputState == VoiceState.ERROR || outputState == VoiceState.ERROR -> VoiceState.ERROR
             else -> VoiceState.IDLE
         }
-    }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(), VoiceState.IDLE)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VoiceState.IDLE)
     
     init {
         loadConfig()

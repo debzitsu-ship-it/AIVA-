@@ -75,7 +75,7 @@ object PerformanceMonitor {
         measureSuspend(name, block)
     }
     
-    private fun record(name: String, nanos: Long) {
+    fun record(name: String, nanos: Long) {
         synchronized(lock) {
             val data = measurements.getOrPut(name) { MeasurementData(name) }
             data.count++

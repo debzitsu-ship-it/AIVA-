@@ -70,15 +70,5 @@ class TemplateMatcher {
         val bounds: Rect,
         val centerX: Int,
         val centerY: Int
-    ) {
-        fun copy(
-            name: String = this.name,
-            confidence: Float = this.confidence,
-            bounds: Rect = this.bounds,
-            centerX: Int = this.centerX,
-            centerY: Int = this.centerY
-        ): TemplateMatch {
-            return TemplateMatch(name, confidence, bounds, centerX, centerY)
-        }
-    }
+    )
 }
