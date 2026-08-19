@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package nvidia.riva.tts;
+
+option java_multiple_files = true;
+option java_package = "com.aiva.voice.riva.proto";
+option java_outer_classname = "RivaTtsProto";
+
+service RivaSpeechSynthesis {
+  rpc Synthesize(SynthesizeSpeechRequest) returns (SynthesizeSpeechResponse);
+  rpc SynthesizeOnline(stream SynthesizeSpeechRequest) returns (stream SynthesizeSpeechResponse);
+}
+
+message SynthesizeSpeechRequest {
+  oneof input {
+    TextInput text = 1;
+    SSMLInput ssml = 2;
+  }
+  VoiceSelectionParams voice = 3;
+  AudioConfig audio_config = 4;
+  map<string, string> custom_config = 5;
+}
+
+message TextInput {
+  string text = 1;
+}
+
+message SSMLInput {
+  string ssml = 1;
+}
+
+message VoiceSelectionParams {
+  string name = 1;
+  string language_code = 2;
+  SsmlVoiceGender ssml_gender = 3;
+}
+
+enum SsmlVoiceGender {
+  SSML_VOICE_GENDER_UNSPECIFIED = 0;
+  MALE = 1;
+  FEMALE = 2;
+  NEUTRAL = 3;
+}
+
+message AudioConfig {
+  AudioEncoding audio_encoding = 1;
+  float speaking_rate = 2;
+  float pitch = 3;
+  float volume_gain_db = 4;
+  float sample_rate_hertz = 5;
+}
+
+enum AudioEncoding {
+  AUDIO_ENCODING_UNSPECIFIED = 0;
+  LINEAR16 = 1;
+  MP3 = 2;
+  OGG_OPUS = 3;
+  ALAW = 4;
+  MULAW = 5;
+}
+
+message SynthesizeSpeechResponse {
+  bytes audio_content = 1;
+  int32 sample_rate = 2;
+}
+
+service RivaSpeechSynthesisConfig {
+  rpc GetVoices(GetVoicesRequest) returns (GetVoicesResponse);
+}
+
+message GetVoicesRequest {}
+
+message GetVoicesResponse {
+  repeated Voice voices = 1;
+}
+
+message Voice {
+  string name = 1;
+  string language_code = 2;
+  SsmlVoiceGender ssml_gender = 3;
+  float natural_sample_rate_hertz = 4;
+}

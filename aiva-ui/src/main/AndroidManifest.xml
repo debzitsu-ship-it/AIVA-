@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- Accessibility Service -->
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE" />
+    
+    <!-- Picture in Picture -->
+    <uses-feature android:name="android.software.picture_in_picture" android:required="false" />
+
+    <application
+        android:name=".AivaApplication"
+        android:allowBackup="true"
+        android:backupAgent=".SecureBackupAgent"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Aiva"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="false"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        tools:targetApi="31">
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="adjustResize"
+            android:supportsPictureInPicture="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|density">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <!-- PiP Activity -->
+        <activity
+            android:name=".pip.PipActivity"
+            android:exported="false"
+            android:supportsPictureInPicture="true"
+            android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|density"
+            android:resizeableActivity="true"
+            android:launchMode="singleTask"
+            android:autoRemoveFromRecents="true"
+            android:excludeFromRecents="true"
+            android:documentLaunchMode="never" />
+        
+        <!-- Accessibility Service -->
+        <service
+            android:name=".automation.accessibility.AivaAccessibilityService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true"
+            android:label="@string/accessibility_service_name">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+        
+        <!-- Foreground Services -->
+        <service
+            android:name=".service.AivaForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+        
+        <service
+            android:name=".service.VoiceCaptureService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+        
+        <service
+            android:name=".service.GameControlService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+        
+        <!-- Mini UI Overlay Service -->
+        <service
+            android:name=".service.MiniAivaService"
+            android:exported="false"
+            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+        
+        <!-- MediaProjection Callback -->
+        <receiver
+            android:name=".receiver.MediaProjectionReceiver"
+            android:exported="false" />
+        
+        <!-- Settings Activity -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aiva" />
+        
+        <!-- Permission Onboarding Activity -->
+        <activity
+            android:name=".onboarding.PermissionOnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Aiva"
+            android:noHistory="true" />
+        
+    </application>
+
+</manifest>

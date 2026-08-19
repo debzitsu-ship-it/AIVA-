@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">AIVA</string>
+    <string name="accessibility_service_name">AIVA Accessibility Service</string>
+    <string name="accessibility_service_description">Allows AIVA to read screen content and perform actions on your behalf</string>
+    
+    <string name="permission_rationale_accessibility">AIVA needs accessibility permission to read screen content and automate actions</string>
+    <string name="permission_rationale_overlay">AIVA needs overlay permission to show the floating Mini UI</string>
+    <string name="permission_rationale_audio">AIVA needs microphone permission for voice input</string>
+    <string name="permission_rationale_notifications">AIVA needs notification permission for foreground service</string>
+    <string name="permission_rationale_screen_capture">AIVA needs screen capture permission for screen observation</string>
+    
+    <string name="settings_title">Settings</string>
+    <string name="settings_api_keys">API Keys</string>
+    <string name="settings_models">Models</string>
+    <string name="settings_voice">Voice</string>
+    <string name="settings_automation">Automation</string>
+    <string name="settings_games">Game Profiles</string>
+    <string name="settings_privacy">Privacy & Security</string>
+    <string name="settings_about">About</string>
+    
+    <string name="api_key_add">Add API Key</string>
+    <string name="api_key_name">Key Name</string>
+    <string name="api_key_value">API Key</string>
+    <string name="api_key_models">Enabled Models</string>
+    <string name="api_key_test">Test Key</string>
+    <string name="api_key_save">Save</string>
+    <string name="api_key_delete">Delete</string>
+    
+    <string name="voice_settings_title">Voice Settings</string>
+    <string name="voice_asr_enabled">Speech Recognition</string>
+    <string name="voice_tts_enabled">Text to Speech</string>
+    <string name="voice_auto_speak">Auto Speak Responses</string>
+    <string name="voice_language">Language</string>
+    <string name="voice_voice">Voice</string>
+    <string name="voice_speed">Speech Speed</string>
+    <string name="voice_volume">Volume</string>
+    
+    <string name="model_fastest">Fastest</string>
+    <string name="model_balanced">Balanced</string>
+    <string name="model_best_reasoning">Best Reasoning</string>
+    <string name="model_fusion">Multi-Model Fusion</string>
+    <string name="model_agent">Agent Mode</string>
+    
+    <string name="game_profile_add">Add Game Profile</string>
+    <string name="game_profile_name">Profile Name</string>
+    <string name="game_profile_package">Package Name</string>
+    <string name="game_profile_calibrate">Calibrate Controls</string>
+    
+    <string name="stop_button">STOP</string>
+    <string name="expand_button">Expand</string>
+    <string name="minimize_button">Minimize</string>
+    
+    <string name="task_state_idle">Ready</string>
+    <string name="task_state_listening">Listening...</string>
+    <string name="task_state_thinking">Thinking...</string>
+    <string name="task_state_planning">Planning...</string>
+    <string name="task_state_observing">Observing screen...</string>
+    <string name="task_state_acting">Executing...</string>
+    <string name="task_state_verifying">Verifying...</string>
+    <string name="task_state_success">Done</string>
+    <string name="task_state_error">Error</string>
+    <string name="task_state_stopped">Stopped</string>
+</resources>

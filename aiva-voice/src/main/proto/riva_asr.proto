@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package nvidia.riva.asr;
+
+option java_multiple_files = true;
+option java_package = "com.aiva.voice.riva.proto";
+option java_outer_classname = "RivaAsrProto";
+
+service RivaSpeechRecognition {
+  rpc StreamingRecognize(stream StreamingRecognizeRequest) returns (stream StreamingRecognizeResponse);
+  rpc Recognize(RecognizeRequest) returns (RecognizeResponse);
+}
+
+message StreamingRecognizeRequest {
+  oneof streaming_request {
+    StreamingRecognitionConfig streaming_config = 1;
+    bytes audio_content = 2;
+  }
+}
+
+message StreamingRecognizeResponse {
+  repeated StreamingRecognitionResult results = 1;
+}
+
+message StreamingRecognitionResult {
+  repeated SpeechRecognitionAlternative alternatives = 1;
+  bool is_final = 2;
+  float stability = 3;
+  float confidence = 4;
+}
+
+message SpeechRecognitionAlternative {
+  string transcript = 1;
+  float confidence = 2;
+  repeated WordInfo words = 3;
+}
+
+message WordInfo {
+  int64 start_time = 1;
+  int64 end_time = 2;
+  string word = 3;
+  float confidence = 4;
+}
+
+message StreamingRecognitionConfig {
+  RecognitionConfig config = 1;
+  bool interim_results = 2;
+  bool single_utterance = 3;
+}
+
+message RecognitionConfig {
+  string encoding = 1;
+  int32 sample_rate_hertz = 2;
+  string language_code = 3;
+  int32 max_alternatives = 4;
+  bool profanity_filter = 5;
+  bool enable_word_time_offsets = 6;
+  bool enable_automatic_punctuation = 7;
+  bool diarization_enabled = 8;
+  string model = 9;
+  bool enable_spoken_punctuation = 10;
+  bool enable_spoken_emojis = 11;
+}
+
+message RecognizeRequest {
+  RecognitionConfig config = 1;
+  bytes audio_content = 2;
+}
+
+message RecognizeResponse {
+  repeated SpeechRecognitionResult results = 1;
+}
+
+message SpeechRecognitionResult {
+  repeated SpeechRecognitionAlternative alternatives = 1;
+  string channel_tag = 2;
+}
