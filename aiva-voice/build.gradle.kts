@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-println("::warning title=config::aiva-voice after plugins")
 
 android {
     namespace = "com.aiva.voice"

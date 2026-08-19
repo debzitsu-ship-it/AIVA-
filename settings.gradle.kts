@@ -1,5 +1,3 @@
-println("::warning title=config::settings.gradle.kts start")
-
 pluginManagement {
     repositories {
         google()
@@ -8,38 +6,17 @@ pluginManagement {
     }
 }
 
-// Point AGP at the runner SDK, accept licenses, and leave a diagnostic
-// file on the existing artifact path if assembleDebug never produces an APK.
-runCatching {
-    val sdkDir = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-        ?: "/usr/local/lib/android/sdk"
-    val sdk = java.io.File(sdkDir)
-    java.io.File(rootDir, "local.properties").writeText("sdk.dir=${sdk.absolutePath.replace("\\", "\\\\")}\n")
-    val licenses = java.io.File(sdk, "licenses")
-    licenses.mkdirs()
-    java.io.File(licenses, "android-sdk-license")
-        .writeText("24333f8a63b6825ea9c5514f83c2829b004d1fee\n")
-    java.io.File(licenses, "android-sdk-preview-license")
-        .writeText("84831b9409646161da1d3268a0436ddba1bbb494\n")
-    val platforms = java.io.File(sdk, "platforms").list()?.sorted()?.joinToString(",") ?: "none"
-    val buildTools = java.io.File(sdk, "build-tools").list()?.sorted()?.joinToString(",") ?: "none"
-    val msg = "sdk=${sdk.absolutePath}; exists=${sdk.exists()}; platforms=$platforms; build-tools=$buildTools; ANDROID_HOME=${System.getenv("ANDROID_HOME")}; ANDROID_SDK_ROOT=${System.getenv("ANDROID_SDK_ROOT")}"
-    println("::notice title=Android SDK::$msg")
-    println("::warning title=Android SDK::$msg")
-    val dumpDir = java.io.File(rootDir, "aiva-ui/build/outputs/apk/debug")
-    dumpDir.mkdirs()
-    java.io.File(dumpDir, "aiva-ui-debug.apk").writeText("AIVA SDK diagnostic\n$msg\n")
-}
-
-
-
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
     }
+}
+
+val sdkDir = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+if (!sdkDir.isNullOrBlank()) {
+    file("local.properties").writeText("sdk.dir=${sdkDir.replace("\\", "\\\\")}\n")
 }
 
 rootProject.name = "AIVA"

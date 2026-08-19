@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-println("::warning title=config::aiva-conversation after plugins")
 
 android {
     namespace = "com.aiva.conversation"
