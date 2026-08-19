@@ -19,7 +19,7 @@ tasks.register("clean", Delete::class) {
 
 subprojects {
     afterEvaluate {
-        val dump = tasks.register("dumpCompileErrors") {
+        val dump = tasks.register("reportKotlinFailures") {
             doLast {
                 val buildDirFile = layout.buildDirectory.get().asFile
                 if (!buildDirFile.exists()) return@doLast
@@ -37,7 +37,9 @@ subprojects {
                 }
             }
         }
-        tasks.matching { it.name.contains("compile", ignoreCase = true) }.configureEach {
+        tasks.matching {
+            it.name.startsWith("compile") || it.name.startsWith("assemble") || it.name.startsWith("lint")
+        }.configureEach {
             finalizedBy(dump)
         }
     }
