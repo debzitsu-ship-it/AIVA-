@@ -394,7 +394,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     }
     
     private fun findScrollableParent(node: AccessibilityNodeInfo): AccessibilityNodeInfo? {
-        var current = node
+        var current: AccessibilityNodeInfo? = node
         while (current != null) {
             if (current.isScrollable) return current
             current = current.parent
@@ -462,9 +462,9 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     private fun getScreenWidth(): Int = resources.displayMetrics.widthPixels
     private fun getScreenHeight(): Int = resources.displayMetrics.heightPixels
     
-    fun getCurrentScreenState(): ScreenState? = _screenState.value
-    
-    fun cancelCurrentAction() {
+    override fun getCurrentScreenState(): ScreenState? = _screenState.value
+
+    override fun cancelCurrentAction() {
         currentActionId?.let { pendingActions.remove(it) }
         currentActionId = null
     }

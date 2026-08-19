@@ -14,6 +14,7 @@ import com.aiva.memory.db.GameProfileEntity
 import com.aiva.memory.db.ApiUsageDao
 import com.aiva.memory.db.ApiUsageEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -160,7 +161,7 @@ class GameProfileRepository @Inject constructor(
     }
     
     suspend fun setActive(id: String) {
-        kotlinx.coroutines.flow.first(dao.getAll()).forEach { profile ->
+        dao.getAll().first().forEach { profile ->
             dao.update(profile.copy(isActive = profile.id == id))
         }
     }

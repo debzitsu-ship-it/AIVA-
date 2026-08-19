@@ -82,7 +82,7 @@ data class Point(
 
 @Serializable
 data class GameState(
-    val gameProfile: String?,
+    val gameProfile: String? = null,
     val playerPosition: Point? = null,
     val crosshairPosition: Point? = null,
     val health: Int? = null,

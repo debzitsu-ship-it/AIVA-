@@ -194,7 +194,7 @@ class PermissionManager @Inject constructor(
         val type: SpecialPermission,
         val rationale: String,
         val settingsAction: String?,
-        val minSdk: Int
+        val minSdk: Int = Build.VERSION_CODES.BASE
     )
     
     data class PermissionState(

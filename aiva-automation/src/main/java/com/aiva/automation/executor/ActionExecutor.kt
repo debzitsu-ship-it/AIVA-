@@ -1,14 +1,11 @@
 package com.aiva.automation.executor
 
-import android.os.Build
 import com.aiva.automation.accessibility.AccessibilityController
 import com.aiva.core.action.Action
 import com.aiva.core.action.ActionResult
 import com.aiva.core.action.Target
 import com.aiva.core.observation.ScreenState
 import com.aiva.core.task.TaskState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -164,7 +161,6 @@ class ActionExecutor @Inject constructor(
             is Action.ReplaceText -> {
                 postState.nodes.any { it.text?.contains(action.newText, true) == true }
             }
-            is Action.Scroll -> preState != postState
             is Action.Back, is Action.Home -> preState != postState
             else -> true
         }

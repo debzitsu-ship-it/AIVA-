@@ -174,90 +174,9 @@ class TaskPlanner @Inject constructor(
     
     private fun parsePlan(json: String, intent: Intent): TaskPlan {
         if (json.isBlank()) return fallbackPlan(intent)
-        return try {
-            fallbackPlan(intent)
-        } catch (e: Exception) {
-            fallbackPlan(intent)
-        }
+        return fallbackPlan(intent)
     }
 
-    @Suppress("unused")
-    private fun parsePlanLegacy(json: String, intent: Intent): TaskPlan {
-        try {
-            return fallbackPlan(intent)
-            
-            val steps = parsed.steps.mapIndexed { index, step ->
-                PlanStep(
-                    id = step.id,
-                    action = parseAction(step.action),
-                    description = step.description,
-                    expectedOutcome = step.expectedOutcome,
-                    fallbackAction = step.fallbackAction?.let { parseAction(it) },
-                    verificationQuery = step.verificationQuery
-                )
-            }
-            
-            return TaskPlan(
-                id = java.util.UUID.randomUUID().toString(),
-                intent = intent,
-                steps = steps,
-                estimatedDuration = parsed.estimatedDuration,
-                requiredCapabilities = parsed.requiredCapabilities.toSet()
-            )
-        } catch (e: Exception) {
-            fallbackPlan(intent)
-        }
-    }
-    
-    private fun parseAction(json: Map<String, String>): Action {
-        val type = json["type"] ?: return Action.Finish("Unknown action")
-        
-        return when (type) {
-            "launch_app" -> Action.LaunchApp(packageName = json["packageName"].orEmpty())
-            "open_url" -> Action.OpenUrl(url = json["url"].orEmpty())
-            "tap" -> Action.Tap(target = parseTarget(null) ?: com.aiva.core.action.Target())
-            "back" -> Action.Back()
-            "home" -> Action.Home()
-            "observe" -> Action.Observe(query = json["query"].orEmpty())
-            "wait" -> Action.Wait(ms = json["ms"]?.toLongOrNull() ?: 1000)
-            "finish" -> Action.Finish(result = json["result"].orEmpty())
-            "ask_user" -> Action.AskUser(question = json["question"].orEmpty())
-            "stop" -> Action.Stop()
-            else -> Action.Finish("Unknown action: $type")
-        }
-    }
-
-    private fun parseTarget(map: Map<String, String>?): com.aiva.core.action.Target? {
-        return map?.let {
-            com.aiva.core.action.Target(
-                text = it["text"],
-                resourceId = it["resourceId"],
-                contentDescription = it["contentDescription"],
-                className = it["className"],
-                index = it["index"]?.toIntOrNull(),
-                visionHint = it["visionHint"]
-            )
-        }
-    }
-    
-    private fun parsePoint(map: Map<String, String>?): com.aiva.core.action.Point {
-        return com.aiva.core.action.Point(
-            x = map?.get("x")?.toFloatOrNull() ?: 0f,
-            y = map?.get("y")?.toFloatOrNull() ?: 0f
-        )
-    }
-
-    private fun parseBounds(map: Map<String, String>?): com.aiva.core.action.NormalizedBounds? {
-        return map?.let {
-            com.aiva.core.action.NormalizedBounds(
-                left = it["left"]?.toFloatOrNull() ?: 0f,
-                top = it["top"]?.toFloatOrNull() ?: 0f,
-                right = it["right"]?.toFloatOrNull() ?: 0f,
-                bottom = it["bottom"]?.toFloatOrNull() ?: 0f
-            )
-        }
-    }
-    
     private fun fallbackPlan(intent: Intent): TaskPlan {
         val steps = when (intent.type) {
             com.aiva.core.task.IntentType.ACTION -> listOf(
@@ -300,20 +219,5 @@ class TaskPlanner @Inject constructor(
         val currentApp: String? = null,
         val currentScreen: String? = null,
         val activeGameProfile: String? = null
-    )
-    
-    private data class PlanResult(
-        val steps: List<PlanStepData>,
-        val estimatedDuration: Long = 5000,
-        val requiredCapabilities: List<String> = emptyList()
-    )
-    
-    private data class PlanStepData(
-        val id: String,
-        val action: Map<String, Any>,
-        val description: String,
-        val expectedOutcome: String,
-        val fallbackAction: Map<String, Any>? = null,
-        val verificationQuery: String? = null
     )
 }

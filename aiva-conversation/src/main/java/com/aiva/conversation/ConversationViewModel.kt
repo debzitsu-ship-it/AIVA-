@@ -18,14 +18,10 @@ import com.aiva.core.task.TaskState
 import com.aiva.memory.repository.ConversationRepository
 import com.aiva.task.executor.TaskExecutor
 import com.aiva.voice.viewmodel.VoiceViewModel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @dagger.hilt.android.lifecycle.HiltViewModel
 class ConversationViewModel @Inject constructor(

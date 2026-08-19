@@ -7,6 +7,10 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 android {
     namespace = "com.aiva.ui"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -66,7 +70,18 @@ android {
 
     packaging {
         resources {
-            excludes += setOf("META-INF/*.kotlin_module", "META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
+            excludes += setOf(
+                "META-INF/*.kotlin_module",
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/DEPENDENCIES",
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1"
+            )
         }
     }
 
