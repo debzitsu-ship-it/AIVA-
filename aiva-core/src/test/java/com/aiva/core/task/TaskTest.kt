@@ -3,6 +3,7 @@ package com.aiva.core.task
 import com.aiva.core.task.Intent
 import com.aiva.core.task.IntentType
 import com.aiva.core.task.TaskState
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals

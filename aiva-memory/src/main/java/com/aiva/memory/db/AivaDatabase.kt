@@ -6,9 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.aiva.core.model.ChatMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 
 @Database(
     entities = [
@@ -28,20 +27,17 @@ abstract class AivaDatabase : RoomDatabase() {
     abstract fun userPreferenceDao(): UserPreferenceDao
     abstract fun gameProfileDao(): GameProfileDao
     abstract fun apiUsageDao(): ApiUsageDao
-    
+
     companion object {
         @Volatile private var INSTANCE: AivaDatabase? = null
-        
+
         fun getInstance(context: Context): AivaDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AivaDatabase::class.java,
                     "aiva_database"
-                ).apply {
-                    fallbackToDestructiveMigration()
-                    setJournalMode(JournalMode.WAL)
-                }.build()
+                ).fallbackToDestructiveMigration().build()
                 INSTANCE = instance
                 instance
             }
@@ -50,23 +46,17 @@ abstract class AivaDatabase : RoomDatabase() {
 }
 
 class Converters {
+    private val json = Json { ignoreUnknownKeys = true }
+
     @androidx.room.TypeConverter
     fun fromChatMessages(messages: List<ChatMessage>): String {
-        return kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.encodeToString(
-            kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                .getSerializersModule()
-                .getListSerializer(ChatMessage.serializer()),
-            messages
-        )
+        return json.encodeToString(ListSerializer(ChatMessage.serializer()), messages)
     }
-    
+
     @androidx.room.TypeConverter
-    fun toChatMessages(json: String): List<ChatMessage> {
-        return kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.decodeFromString(
-            kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                .getSerializersModule()
-                .getListSerializer(ChatMessage.serializer()),
-            json
-        )
+    fun toChatMessages(value: String): List<ChatMessage> {
+        return runCatching {
+            json.decodeFromString(ListSerializer(ChatMessage.serializer()), value)
+        }.getOrDefault(emptyList())
     }
 }

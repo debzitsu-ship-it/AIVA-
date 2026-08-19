@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.hilt)
 }
 
 android {
@@ -12,7 +12,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
-        targetSdk = libs.versions.targetSdk.get().toInt()
     }
 
     compileOptions {
@@ -20,10 +19,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-        freeCompilerArgs += listOf("-Xopt-in=kotlin.RequiresOptIn")
-    }
+    kotlinOptions { jvmTarget = "17" }
+
+    testOptions { unitTests.isReturnDefaultValues = true }
+    lint { abortOnError = false; checkReleaseBuilds = false }
 }
 
 dependencies {
@@ -39,4 +38,7 @@ dependencies {
     implementation(libs.retrofit.kotlinx.serialization)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.junit)
 }

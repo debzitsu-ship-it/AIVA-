@@ -6,7 +6,7 @@ import android.media.projection.MediaProjection
 import com.aiva.core.game.ControlCommand
 import com.aiva.core.game.FrameData
 import com.aiva.core.game.GameProfile
-import com.aiva.core.game.GameState
+import com.aiva.core.observation.GameState
 import com.aiva.game.vision.GameVisionProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

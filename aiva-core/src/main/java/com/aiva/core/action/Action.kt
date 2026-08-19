@@ -2,6 +2,7 @@ package com.aiva.core.action
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface Action {
     @Serializable
     data class LaunchApp(val packageName: String, val action: String? = null) : Action
@@ -52,10 +53,10 @@ sealed interface Action {
     data class Paste(val target: Target? = null) : Action
 
     @Serializable
-    data class Back() : Action
+    data class Back(val unused: Int = 0) : Action
 
     @Serializable
-    data class Home() : Action
+    data class Home(val unused: Int = 0) : Action
 
     @Serializable
     data class Observe(val query: String) : Action
@@ -76,7 +77,7 @@ sealed interface Action {
     data class AskUser(val question: String) : Action
 
     @Serializable
-    data class Stop() : Action
+    data class Stop(val unused: Int = 0) : Action
 }
 
 @Serializable
@@ -90,20 +91,8 @@ data class Target(
     val normalizedBounds: NormalizedBounds? = null
 ) {
     fun hasAnyCriteria(): Boolean {
-        return text != null || resourceId != null || contentDescription != null 
+        return text != null || resourceId != null || contentDescription != null
             || className != null || index != null || visionHint != null || normalizedBounds != null
-    }
-    
-    fun copy(
-        text: String? = this.text,
-        resourceId: String? = this.resourceId,
-        contentDescription: String? = this.contentDescription,
-        className: String? = this.className,
-        index: Int? = this.index,
-        visionHint: String? = this.visionHint,
-        normalizedBounds: NormalizedBounds? = this.normalizedBounds
-    ): Target {
-        return Target(text, resourceId, contentDescription, className, index, visionHint, normalizedBounds)
     }
 }
 
@@ -115,6 +104,10 @@ data class NormalizedBounds(
     val bottom: Float
 ) {
     fun center(): Point = Point((left + right) / 2, (top + bottom) / 2)
+    fun width(): Float = right - left
+    fun height(): Float = bottom - top
+    fun contains(x: Float, y: Float): Boolean =
+        x >= left && x <= right && y >= top && y <= bottom
 }
 
 @Serializable
@@ -131,28 +124,5 @@ enum class ScrollDirection {
 data class ActionResult(
     val success: Boolean,
     val message: String? = null,
-    val newScreenState: ScreenState? = null
-)
-
-@Serializable
-data class ScreenState(
-    val packageName: String?,
-    val activityName: String?,
-    val nodes: List<AccessibilityNodeSummary>,
-    val screenshot: ByteArray? = null,
-    val timestamp: Long = System.currentTimeMillis()
-)
-
-@Serializable
-data class AccessibilityNodeSummary(
-    val id: Int,
-    val text: String?,
-    val contentDescription: String?,
-    val resourceId: String?,
-    val className: String?,
-    val bounds: NormalizedBounds?,
-    val clickable: Boolean,
-    val scrollable: Boolean,
-    val editable: Boolean,
-    val children: List<AccessibilityNodeSummary> = emptyList()
+    val newScreenState: com.aiva.core.observation.ScreenState? = null
 )

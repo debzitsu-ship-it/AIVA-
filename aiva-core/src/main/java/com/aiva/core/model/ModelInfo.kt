@@ -56,7 +56,7 @@ data class ChatCompletionRequest(
     val maxTokens: Int = 16384,
     val seed: Long? = null,
     val stream: Boolean = false,
-    val chatTemplateKwargs: Map<String, Any>? = null,
+    val chatTemplateKwargs: Map<String, Boolean>? = null,
     val reasoningBudget: Int? = null
 )
 

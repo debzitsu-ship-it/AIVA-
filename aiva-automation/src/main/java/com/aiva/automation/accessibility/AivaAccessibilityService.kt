@@ -40,10 +40,10 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     private var currentActionId: String? = null
     
     private val _screenState = MutableStateFlow<ScreenState?>(null)
-    val screenState: StateFlow<ScreenState?> = _screenState
-    
-    private val _serviceEnabled = MutableStateFlow<Boolean>(false)
-    val serviceEnabled: StateFlow<Boolean> = _serviceEnabled
+    override val screenState: StateFlow<ScreenState?> = _screenState
+
+    private val _serviceEnabled = MutableStateFlow(false)
+    override val serviceEnabled: StateFlow<Boolean> = _serviceEnabled
     
     override fun onCreate() {
         super.onCreate()
@@ -95,7 +95,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
         Log.d(TAG, "AivaAccessibilityService destroyed")
     }
     
-    fun executeAction(action: Action): ActionResult {
+    override fun executeAction(action: Action): ActionResult {
         val actionId = java.util.UUID.randomUUID().toString()
         currentActionId = actionId
         
@@ -172,7 +172,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
         val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(action.url))
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         
-        try {
+        return try {
             startActivity(intent)
             ActionResult(success = true, message = "Opened URL")
         } catch (e: Exception) {
@@ -241,11 +241,11 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
             }
         }, null)
         
-        ActionResult(success = success, message = if (success) "Swiped" else "Swipe failed")
+        return ActionResult(success = success, message = if (success) "Swiped" else "Swipe failed")
     }
     
     private fun performScroll(action: Action.Scroll): ActionResult {
-        val node = action.target.let { findNode(it) } ?: rootInActiveWindow
+        val node = action.target?.let { findNode(it) } ?: rootInActiveWindow
             ?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
             ?.let { findScrollableParent(it) }
         
@@ -264,7 +264,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     }
     
     private fun performType(action: Action.Type): ActionResult {
-        val node = action.target.let { findNode(it) } ?: rootInActiveWindow
+        val node = action.target?.let { findNode(it) } ?: rootInActiveWindow
             ?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
         
         return if (node != null && node.isEditable) {
@@ -295,7 +295,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     }
     
     private fun performCopy(action: Action.Copy): ActionResult {
-        val node = action.target.let { findNode(it) } ?: rootInActiveWindow
+        val node = action.target?.let { findNode(it) } ?: rootInActiveWindow
             ?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
         
         return if (node != null) {
@@ -308,7 +308,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     }
     
     private fun performPaste(action: Action.Paste): ActionResult {
-        val node = action.target.let { findNode(it) } ?: rootInActiveWindow
+        val node = action.target?.let { findNode(it) } ?: rootInActiveWindow
             ?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
         
         return if (node != null && node.isEditable) {
@@ -322,33 +322,33 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     
     private fun performBack(): ActionResult {
         val success = performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-        ActionResult(success = success, message = if (success) "Back pressed" else "Back failed")
+        return ActionResult(success = success, message = if (success) "Back pressed" else "Back failed")
     }
-    
+
     private fun performHome(): ActionResult {
         val success = performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
-        ActionResult(success = success, message = if (success) "Home pressed" else "Home failed")
+        return ActionResult(success = success, message = if (success) "Home pressed" else "Home failed")
     }
-    
+
     private fun performObserve(action: Action.Observe): ActionResult {
         updateScreenState()
         val screen = _screenState.value
-        ActionResult(
+        return ActionResult(
             success = true,
             message = "Screen observed: ${screen?.packageName} - ${screen?.nodes?.size ?: 0} nodes"
         )
     }
-    
+
     private fun performWait(action: Action.Wait): ActionResult {
         Thread.sleep(action.ms)
-        ActionResult(success = true, message = "Waited ${action.ms}ms")
+        return ActionResult(success = true, message = "Waited ${action.ms}ms")
     }
-    
+
     private fun performFind(action: Action.Find): ActionResult {
         val node = findNode(action.target)
         val found = node != null
         node?.recycle()
-        ActionResult(success = found, message = if (found) "Found target" else "Target not found")
+        return ActionResult(success = found, message = if (found) "Found target" else "Target not found")
     }
     
     private fun performSelect(action: Action.Select): ActionResult {
@@ -371,16 +371,16 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
         
         // Filter by criteria
         target.text?.let { text ->
-            nodes = nodes.filter { it.text?.toString().contains(text, true) == true }
+            nodes = nodes.filter { it.text?.toString()?.contains(text, true) == true }
         }
         target.resourceId?.let { id ->
             nodes = nodes.filter { it.viewIdResourceName?.contains(id, true) == true }
         }
         target.contentDescription?.let { desc ->
-            nodes = nodes.filter { it.contentDescription?.toString().contains(desc, true) == true }
+            nodes = nodes.filter { it.contentDescription?.toString()?.contains(desc, true) == true }
         }
         target.className?.let { cls ->
-            nodes = nodes.filter { it.className?.toString().contains(cls, true) == true }
+            nodes = nodes.filter { it.className?.toString()?.contains(cls, true) == true }
         }
         target.index?.let { idx ->
             nodes = nodes.drop(idx).take(1)
@@ -443,7 +443,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
             contentDescription = node.contentDescription?.toString(),
             resourceId = node.viewIdResourceName,
             className = node.className?.toString(),
-            bounds = com.aiva.core.action.NormalizedBounds(
+            bounds = com.aiva.core.observation.NormalizedBounds(
                 left = bounds.left / getScreenWidth().toFloat(),
                 top = bounds.top / getScreenHeight().toFloat(),
                 right = bounds.right / getScreenWidth().toFloat(),

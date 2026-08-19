@@ -2,6 +2,7 @@ package com.aiva.core.security
 
 import com.aiva.core.security.ApiKeyEntry
 import com.aiva.core.security.KeyTestResult
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,13 +49,13 @@ class SecurityTest {
             SecurityEvent.KeyAdded("key3"),
             SecurityEvent.KeyRemoved("key4"),
             SecurityEvent.FailedAttempt("reason"),
-            SecurityEvent.BiometricPromptShown(),
-            SecurityEvent.BiometricSuccess(),
-            SecurityEvent.BiometricFailed()
+            SecurityEvent.BiometricPromptShown,
+            SecurityEvent.BiometricSuccess,
+            SecurityEvent.BiometricFailed
         )
         
         events.forEach { event ->
-            val jsonStr = json.encodeToString(event)
+            val jsonStr = json.encodeToString(SecurityEvent.serializer(), event)
             val decoded = json.decodeFromString(SecurityEvent.serializer(), jsonStr)
             assertEquals(event, decoded)
         }

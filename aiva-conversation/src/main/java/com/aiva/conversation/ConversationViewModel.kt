@@ -11,7 +11,7 @@ import com.aiva.core.model.ChatMessage
 import com.aiva.core.model.ModelInfo
 import com.aiva.core.model.StreamChunk
 import com.aiva.core.security.ApiKeyEntry
-import com.aiva.core.security.ApiKeyManager
+import com.aiva.security.ApiKeyManager
 import com.aiva.core.task.Intent
 import com.aiva.core.task.IntentType
 import com.aiva.core.task.TaskState
@@ -27,7 +27,7 @@ import kotlinx.coroutines.runInterruptible
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+@dagger.hilt.android.lifecycle.HiltViewModel
 class ConversationViewModel @Inject constructor(
     private val nimClient: NimClient,
     private val modelRegistry: ModelRegistry,
@@ -36,7 +36,7 @@ class ConversationViewModel @Inject constructor(
     private val apiKeyManager: ApiKeyManager,
     private val conversationRepository: ConversationRepository,
     private val taskExecutor: TaskExecutor,
-    private val voiceViewModel: VoiceViewModel
+    private val voice: VoiceViewModel
 ) : ViewModel() {
     
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -48,8 +48,7 @@ class ConversationViewModel @Inject constructor(
     private val _currentModel = MutableStateFlow<ModelInfo?>(null)
     val currentModel: StateFlow<ModelInfo?> = _currentModel
     
-    // Expose voiceViewModel for UI access
-    val voiceViewModel: VoiceViewModel = voiceViewModel
+    val voiceViewModel: VoiceViewModel get() = voice
     
     private val _availableModels = MutableStateFlow<List<ModelInfo>>(emptyList())
     val availableModels: StateFlow<List<ModelInfo>> = _availableModels
@@ -345,9 +344,7 @@ class ConversationViewModel @Inject constructor(
             val conversation = if (currentConversationId != null) {
                 conversationRepository.get(currentConversationId!!)?.copy(
                     messagesJson = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }.encodeToString(
-                        kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                            .getSerializersModule()
-                            .getListSerializer(ChatMessage.serializer()),
+                        kotlinx.serialization.builtins.ListSerializer(ChatMessage.serializer()),
                         _messages.value
                     ),
                     updatedAt = System.currentTimeMillis()
@@ -379,8 +376,7 @@ class ConversationViewModel @Inject constructor(
     fun stopGeneration() {
         _state.value = TaskState.STOPPED
         taskExecutor.stop()
-        voiceViewModel.interrupt()
-        viewModelScope.cancel()
+        voice.interrupt()
     }
     
     fun updateAvailableModels(enabledModelIds: Set<String>) {

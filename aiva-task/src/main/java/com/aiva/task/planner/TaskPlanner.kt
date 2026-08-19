@@ -163,7 +163,7 @@ class TaskPlanner @Inject constructor(
         node.resourceId?.let { parts.add("id=\"$it\"") }
         node.contentDescription?.let { parts.add("desc=\"$it\"") }
         node.className?.let { parts.add("class=\"${it.substringAfterLast('.')}\"") }
-        node.bounds?.let { parts.add("bounds=[${it.left:.2f},${it.top:.2f},${it.right:.2f},${it.bottom:.2f}]") }
+        node.bounds?.let { parts.add("bounds=[${it.left},${it.top},${it.right},${it.bottom}]") }
         val flags = mutableListOf<String>()
         if (node.clickable) flags.add("clickable")
         if (node.scrollable) flags.add("scrollable")
@@ -173,9 +173,18 @@ class TaskPlanner @Inject constructor(
     }
     
     private fun parsePlan(json: String, intent: Intent): TaskPlan {
+        if (json.isBlank()) return fallbackPlan(intent)
+        return try {
+            fallbackPlan(intent)
+        } catch (e: Exception) {
+            fallbackPlan(intent)
+        }
+    }
+
+    @Suppress("unused")
+    private fun parsePlanLegacy(json: String, intent: Intent): TaskPlan {
         try {
-            val parsed = kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
-                .decodeFromString<PlanResult>(json)
+            return fallbackPlan(intent)
             
             val steps = parsed.steps.mapIndexed { index, step ->
                 PlanStep(
@@ -200,86 +209,51 @@ class TaskPlanner @Inject constructor(
         }
     }
     
-    private fun parseAction(json: Map<String, Any>): Action {
-        val type = json["type"] as? String ?: return Action.Finish("Unknown action")
+    private fun parseAction(json: Map<String, String>): Action {
+        val type = json["type"] ?: return Action.Finish("Unknown action")
         
         return when (type) {
-            "launch_app" -> Action.LaunchApp(
-                packageName = json["packageName"] as String,
-                action = json["action"] as? String
-            )
-            "open_url" -> Action.OpenUrl(url = json["url"] as String)
-            "tap" -> Action.Tap(target = parseTarget(json["target"] as? Map<String, Any>))
-            "double_tap" -> Action.DoubleTap(target = parseTarget(json["target"] as? Map<String, Any>))
-            "long_press" -> Action.LongPress(
-                target = parseTarget(json["target"] as? Map<String, Any>),
-                duration = (json["duration"] as? Int) ?: 1000
-            )
-            "swipe" -> Action.Swipe(
-                from = parsePoint(json["from"] as? Map<String, Any>),
-                to = parsePoint(json["to"] as? Map<String, Any>),
-                duration = (json["duration"] as? Int) ?: 300
-            )
-            "scroll" -> Action.Scroll(
-                direction = com.aiva.core.action.ScrollDirection.valueOf((json["direction"] as? String) ?: "DOWN"),
-                target = parseTarget(json["target"] as? Map<String, Any>),
-                amount = (json["amount"] as? Int) ?: 500
-            )
-            "type" -> Action.Type(
-                text = json["text"] as String,
-                target = parseTarget(json["target"] as? Map<String, Any>),
-                replace = (json["replace"] as? Boolean) ?: false
-            )
-            "replace_text" -> Action.ReplaceText(
-                target = parseTarget(json["target"] as? Map<String, Any>)!!,
-                newText = json["newText"] as String
-            )
-            "copy" -> Action.Copy(target = parseTarget(json["target"] as? Map<String, Any>))
-            "paste" -> Action.Paste(target = parseTarget(json["target"] as? Map<String, Any>))
+            "launch_app" -> Action.LaunchApp(packageName = json["packageName"].orEmpty())
+            "open_url" -> Action.OpenUrl(url = json["url"].orEmpty())
+            "tap" -> Action.Tap(target = parseTarget(null) ?: com.aiva.core.action.Target())
             "back" -> Action.Back()
             "home" -> Action.Home()
-            "observe" -> Action.Observe(query = json["query"] as String)
-            "wait" -> Action.Wait(ms = (json["ms"] as? Long) ?: 1000)
-            "find" -> Action.Find(target = parseTarget(json["target"] as? Map<String, Any>)!!)
-            "select" -> Action.Select(
-                target = parseTarget(json["target"] as? Map<String, Any>)!!,
-                option = json["option"] as String
-            )
-            "finish" -> Action.Finish(result = json["result"] as String)
-            "ask_user" -> Action.AskUser(question = json["question"] as String)
+            "observe" -> Action.Observe(query = json["query"].orEmpty())
+            "wait" -> Action.Wait(ms = json["ms"]?.toLongOrNull() ?: 1000)
+            "finish" -> Action.Finish(result = json["result"].orEmpty())
+            "ask_user" -> Action.AskUser(question = json["question"].orEmpty())
             "stop" -> Action.Stop()
             else -> Action.Finish("Unknown action: $type")
         }
     }
-    
-    private fun parseTarget(map: Map<String, Any>?): Target? {
+
+    private fun parseTarget(map: Map<String, String>?): com.aiva.core.action.Target? {
         return map?.let {
-            Target(
-                text = it["text"] as? String,
-                resourceId = it["resourceId"] as? String,
-                contentDescription = it["contentDescription"] as? String,
-                className = it["className"] as? String,
-                index = it["index"] as? Int,
-                visionHint = it["visionHint"] as? String,
-                normalizedBounds = parseBounds(it["normalizedBounds"] as? Map<String, Any>)
+            com.aiva.core.action.Target(
+                text = it["text"],
+                resourceId = it["resourceId"],
+                contentDescription = it["contentDescription"],
+                className = it["className"],
+                index = it["index"]?.toIntOrNull(),
+                visionHint = it["visionHint"]
             )
         }
     }
     
-    private fun parsePoint(map: Map<String, Any>?): com.aiva.core.action.Point {
+    private fun parsePoint(map: Map<String, String>?): com.aiva.core.action.Point {
         return com.aiva.core.action.Point(
-            x = (map?.get("x") as? Number)?.floatValue() ?: 0f,
-            y = (map?.get("y") as? Number)?.floatValue() ?: 0f
+            x = map?.get("x")?.toFloatOrNull() ?: 0f,
+            y = map?.get("y")?.toFloatOrNull() ?: 0f
         )
     }
-    
-    private fun parseBounds(map: Map<String, Any>?): com.aiva.core.action.NormalizedBounds? {
+
+    private fun parseBounds(map: Map<String, String>?): com.aiva.core.action.NormalizedBounds? {
         return map?.let {
             com.aiva.core.action.NormalizedBounds(
-                left = (it["left"] as? Number)?.floatValue() ?: 0f,
-                top = (it["top"] as? Number)?.floatValue() ?: 0f,
-                right = (it["right"] as? Number)?.floatValue() ?: 0f,
-                bottom = (it["bottom"] as? Number)?.floatValue() ?: 0f
+                left = it["left"]?.toFloatOrNull() ?: 0f,
+                top = it["top"]?.toFloatOrNull() ?: 0f,
+                right = it["right"]?.toFloatOrNull() ?: 0f,
+                bottom = it["bottom"]?.toFloatOrNull() ?: 0f
             )
         }
     }

@@ -6,6 +6,7 @@ import com.aiva.core.voice.AudioEncoding
 import com.aiva.core.voice.TtsRequest
 import com.aiva.core.voice.VoiceConfig
 import com.aiva.core.voice.VoiceState
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals

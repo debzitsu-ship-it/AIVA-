@@ -33,13 +33,22 @@ data class SecurityConfig(
     val allowExport: Boolean = false
 )
 
+@Serializable
 sealed interface SecurityEvent {
+    @Serializable
     data class KeyAccessed(val keyId: String) : SecurityEvent
+    @Serializable
     data class KeyTested(val keyId: String, val success: Boolean) : SecurityEvent
+    @Serializable
     data class KeyAdded(val keyId: String) : SecurityEvent
+    @Serializable
     data class KeyRemoved(val keyId: String) : SecurityEvent
+    @Serializable
     data class FailedAttempt(val reason: String) : SecurityEvent
-    data class BiometricPromptShown : SecurityEvent
-    data class BiometricSuccess : SecurityEvent
-    data class BiometricFailed : SecurityEvent
+    @Serializable
+    data object BiometricPromptShown : SecurityEvent
+    @Serializable
+    data object BiometricSuccess : SecurityEvent
+    @Serializable
+    data object BiometricFailed : SecurityEvent
 }
