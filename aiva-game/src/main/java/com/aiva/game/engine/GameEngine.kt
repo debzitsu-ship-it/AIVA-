@@ -1,7 +1,5 @@
 package com.aiva.game.engine
 
-import android.graphics.Bitmap
-import android.media.Image
 import android.media.projection.MediaProjection
 import com.aiva.core.game.ControlCommand
 import com.aiva.core.game.FrameData

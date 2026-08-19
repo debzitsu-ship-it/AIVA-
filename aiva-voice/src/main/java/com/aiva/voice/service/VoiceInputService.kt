@@ -5,15 +5,11 @@ import android.media.AudioRecord
 import android.media.MediaRecorder
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import com.aiva.core.util.SecureStorage
-import com.aiva.core.voice.AsrResult
 import com.aiva.core.voice.AudioConfig
 import com.aiva.core.voice.VoiceState
 import com.aiva.voice.riva.RivaAsrClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.cancel

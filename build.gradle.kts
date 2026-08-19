@@ -13,6 +13,14 @@ allprojects {
     version = "1.0.0"
 }
 
+subprojects {
+    plugins.withId("org.jetbrains.kotlin.kapt") {
+        extensions.configure<org.jetbrains.kotlin.gradle.plugin.KaptExtension>("kapt") {
+            correctErrorTypes = true
+        }
+    }
+}
+
 tasks.register("clean", Delete::class) {
     delete(rootProject.layout.buildDirectory)
 }
