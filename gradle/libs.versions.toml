@@ -10,7 +10,7 @@ composeBom = "2024.06.00"
 material3 = "1.3.0"
 lifecycle = "2.8.6"
 room = "2.6.1"
-hilt = "2.51.1"
+hilt = "2.54"
 hiltNavigation = "1.2.0"
 kotlinxCoroutines = "1.8.1"
 kotlinxSerialization = "1.6.3"
@@ -83,6 +83,7 @@ turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso" }
 ui-automator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiAutomator" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+kotlinx-metadata-jvm = { group = "org.jetbrains.kotlinx", name = "kotlinx-metadata-jvm", version = "0.9.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -29,6 +29,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    kapt(libs.kotlinx.metadata.jvm)
     kapt(libs.androidx.room.compiler)
 
     testImplementation(kotlin("test"))

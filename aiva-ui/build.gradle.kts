@@ -128,6 +128,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    kapt(libs.kotlinx.metadata.jvm)
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
