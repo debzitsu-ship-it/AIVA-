@@ -3,9 +3,8 @@ package com.aiva.voice.service
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.aiva.core.util.SecureStorage
 import com.aiva.core.voice.AsrResult
 import com.aiva.core.voice.AudioConfig
@@ -25,7 +24,7 @@ import javax.inject.Singleton
 @Singleton
 class VoiceInputService @Inject constructor(
     private val rivaAsrClient: RivaAsrClient
-) : LifecycleObserver {
+) : DefaultLifecycleObserver {
     
     private var audioRecord: AudioRecord? = null
     private var isRecording = false
@@ -148,8 +147,7 @@ class VoiceInputService @Inject constructor(
         )
     }
     
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
         cancelListening()
         recordingScope.cancel()
     }

@@ -1,12 +1,13 @@
 package com.aiva.voice.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.aiva.security.ApiKeyManager
 import com.aiva.core.voice.VoiceConfig
 import com.aiva.core.voice.VoiceState
 import com.aiva.voice.service.VoiceInputService
 import com.aiva.voice.service.VoiceOutputService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,13 +17,21 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Voice manager - singleton service that can be injected into ViewModels.
+ * Previously was a @HiltViewModel which caused Hilt compilation error when
+ * injected into another ViewModel. Now implemented as a plain Singleton with
+ * its own CoroutineScope so it can be shared across ViewModels and UI.
+ */
 @Singleton
 class VoiceViewModel @Inject constructor(
     private val apiKeyManager: ApiKeyManager,
     private val voiceInputService: VoiceInputService,
     private val voiceOutputService: VoiceOutputService
-) : ViewModel() {
+) {
     
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
     private val _config = MutableStateFlow<VoiceConfig>(VoiceConfig())
     val config: StateFlow<VoiceConfig> = _config
     
@@ -49,7 +58,7 @@ class VoiceViewModel @Inject constructor(
             inputState == VoiceState.ERROR || outputState == VoiceState.ERROR -> VoiceState.ERROR
             else -> VoiceState.IDLE
         }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VoiceState.IDLE)
+    }.stateIn(scope, SharingStarted.WhileSubscribed(5_000), VoiceState.IDLE)
     
     init {
         loadConfig()
@@ -57,7 +66,7 @@ class VoiceViewModel @Inject constructor(
     }
     
     private fun loadConfig() {
-        viewModelScope.launch {
+        scope.launch {
             val asrEnabled = apiKeyManager.getBoolean("voice_asr_enabled", true)
             val ttsEnabled = apiKeyManager.getBoolean("voice_tts_enabled", true)
             val autoSpeak = apiKeyManager.getBoolean("voice_auto_speak", false)
@@ -83,20 +92,20 @@ class VoiceViewModel @Inject constructor(
     }
     
     private fun observeServices() {
-        viewModelScope.launch {
+        scope.launch {
             voiceInputService.partialResults.collect { text ->
                 _partialText.value = text
             }
         }
         
-        viewModelScope.launch {
+        scope.launch {
             voiceInputService.finalResults.collect { text ->
                 _recognizedText.value = text
                 _isListening.value = false
             }
         }
         
-        viewModelScope.launch {
+        scope.launch {
             voiceOutputService.state.collect { state ->
                 _isSpeaking.value = (state == VoiceState.SPEAKING)
             }
@@ -106,7 +115,7 @@ class VoiceViewModel @Inject constructor(
     fun startListening(onResult: (String) -> Unit) {
         if (!_config.value.asrEnabled) return
         
-        viewModelScope.launch {
+        scope.launch {
             val keys = apiKeyManager.getAllKeys()
             val asrKey = keys.firstOrNull { it.models.any { it.contains("asr") || it.contains("whisper") } }
                 ?: keys.firstOrNull()
@@ -144,7 +153,7 @@ class VoiceViewModel @Inject constructor(
     fun speak(text: String) {
         if (!_config.value.ttsEnabled || text.isBlank()) return
         
-        viewModelScope.launch {
+        scope.launch {
             val keys = apiKeyManager.getAllKeys()
             val ttsKey = keys.firstOrNull { it.models.any { it.contains("tts") || it.contains("chatterbox") } }
                 ?: keys.firstOrNull()
