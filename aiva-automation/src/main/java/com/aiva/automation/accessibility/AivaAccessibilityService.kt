@@ -27,10 +27,9 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
     
     companion object {
         private const val TAG = "AivaAccessibility"
-        
-        private val _instance: AivaAccessibilityService? = null
+
         @Volatile var instance: AivaAccessibilityService? = null
-        
+
         fun getInstance(): AivaAccessibilityService? = instance
     }
     

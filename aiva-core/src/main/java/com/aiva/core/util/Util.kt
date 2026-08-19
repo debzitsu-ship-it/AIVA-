@@ -17,6 +17,7 @@ object SecureStorage {
     private var encryptedPrefs: EncryptedSharedPreferences? = null
 
     @Synchronized
+    @Suppress("DEPRECATION")
     fun init(context: Context) {
         if (encryptedPrefs == null) {
             val masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)

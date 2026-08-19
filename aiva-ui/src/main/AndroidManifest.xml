@@ -61,7 +61,7 @@
         
         <!-- Accessibility Service -->
         <service
-            android:name=".automation.accessibility.AivaAccessibilityService"
+            android:name="com.aiva.automation.accessibility.AivaAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true"
             android:label="@string/accessibility_service_name">
@@ -92,8 +92,7 @@
         <!-- Mini UI Overlay Service -->
         <service
             android:name=".service.MiniAivaService"
-            android:exported="false"
-            android:permission="android.permission.SYSTEM_ALERT_WINDOW" />
+            android:exported="false" />
         
         <!-- MediaProjection Callback -->
         <receiver
