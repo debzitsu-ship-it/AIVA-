@@ -120,3 +120,4 @@ AIVA Application
 4. **Performance**: Profile UI rendering, optimize frame processing
 5. **Play Store**: Compliance review, crash reporting (no sensitive data)
 6. **Documentation**: User guide, API reference# Build fix
+
