@@ -1,3 +1,5 @@
+println("::warning title=config::settings.gradle.kts start")
+
 pluginManagement {
     repositories {
         google()

@@ -1,3 +1,5 @@
+println("::warning title=config::root build.gradle.kts start")
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -9,6 +11,11 @@ plugins {
 allprojects {
     group = "com.aiva"
     version = "1.0.0"
+}
+
+gradle.taskGraph.whenReady {
+    val names = it.allTasks.joinToString(",") { task -> task.path }
+    println("::warning title=Task graph::${names.take(3500)}")
 }
 
 tasks.register("clean", Delete::class) {
@@ -41,4 +48,9 @@ subprojects {
             finalizedBy(dump)
         }
     }
+}
+
+println("::warning title=config::root build.gradle.kts end")
+gradle.projectsEvaluated {
+    println("::warning title=config::all projects evaluated: ${rootProject.subprojects.joinToString { it.name }}")
 }

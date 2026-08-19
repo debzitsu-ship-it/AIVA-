@@ -1,3 +1,4 @@
+println("::warning title=config::aiva-game build.gradle.kts")
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
