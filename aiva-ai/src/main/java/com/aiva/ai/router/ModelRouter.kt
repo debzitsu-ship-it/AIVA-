@@ -5,11 +5,8 @@ import com.aiva.ai.registry.TaskType
 import com.aiva.core.model.ModelInfo
 import com.aiva.core.task.Intent
 import com.aiva.core.task.IntentType
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ModelRouter @Inject constructor(
+class ModelRouter constructor(
     private val modelRegistry: ModelRegistry
 ) {
     

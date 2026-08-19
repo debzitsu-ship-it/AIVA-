@@ -11,11 +11,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TouchController @Inject constructor() {
+class TouchController constructor() {
 
     private val commandChannel = Channel<ControlCommand>(100)
     private var injectionScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

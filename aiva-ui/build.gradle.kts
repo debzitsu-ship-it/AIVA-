@@ -2,13 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.hilt)
-}
-
-kapt {
-    correctErrorTypes = true
 }
 
 android {
@@ -112,7 +106,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.service)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.material)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.runtime)
@@ -126,13 +119,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-    kapt(libs.kotlinx.metadata.jvm)
-
-    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     testImplementation(kotlin("test"))
     testImplementation(libs.junit)
-    androidTestImplementation(libs.espresso.core)
 }

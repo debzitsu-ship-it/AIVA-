@@ -14,11 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class VoiceInputService @Inject constructor(
+class VoiceInputService constructor(
     private val rivaAsrClient: RivaAsrClient
 ) : DefaultLifecycleObserver {
     

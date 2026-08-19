@@ -14,11 +14,8 @@ import com.aiva.core.task.TaskPlan
 import com.aiva.core.task.TaskState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TaskPlanner @Inject constructor(
+class TaskPlanner constructor(
     private val nimClient: NimClient,
     private val modelRegistry: ModelRegistry,
     private val modelRouter: ModelRouter

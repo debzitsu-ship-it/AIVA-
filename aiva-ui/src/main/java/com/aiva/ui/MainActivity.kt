@@ -13,10 +13,8 @@ import androidx.lifecycle.lifecycleScope
 import com.aiva.conversation.ConversationViewModel
 import com.aiva.ui.screen.MainScreen
 import com.aiva.ui.theme.AivaTheme
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     
     private val viewModel: ConversationViewModel by viewModels()

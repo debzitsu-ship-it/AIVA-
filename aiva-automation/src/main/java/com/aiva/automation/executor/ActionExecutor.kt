@@ -8,11 +8,8 @@ import com.aiva.core.observation.ScreenState
 import com.aiva.core.task.TaskState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ActionExecutor @Inject constructor(
+class ActionExecutor constructor(
     private val accessibilityController: AccessibilityController
 ) {
     

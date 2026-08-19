@@ -7,11 +7,8 @@ import com.aiva.core.security.ApiKeyEntry
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withTimeoutOrNull
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class MultiModelFusion @Inject constructor(
+class MultiModelFusion constructor(
     private val nimClient: NimClient,
     private val modelRegistry: ModelRegistry
 ) {

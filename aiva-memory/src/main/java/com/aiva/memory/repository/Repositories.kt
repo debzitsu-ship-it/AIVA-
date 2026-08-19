@@ -2,190 +2,147 @@ package com.aiva.memory.repository
 
 import com.aiva.core.model.ChatMessage
 import com.aiva.core.task.TaskState
-import com.aiva.memory.db.AivaDatabase
-import com.aiva.memory.db.ConversationDao
-import com.aiva.memory.db.ConversationEntity
-import com.aiva.memory.db.TaskHistoryDao
-import com.aiva.memory.db.TaskHistoryEntity
-import com.aiva.memory.db.UserPreferenceDao
-import com.aiva.memory.db.UserPreferenceEntity
-import com.aiva.memory.db.GameProfileDao
-import com.aiva.memory.db.GameProfileEntity
-import com.aiva.memory.db.ApiUsageDao
 import com.aiva.memory.db.ApiUsageEntity
+import com.aiva.memory.db.ConversationEntity
+import com.aiva.memory.db.GameProfileEntity
+import com.aiva.memory.db.TaskHistoryEntity
+import com.aiva.memory.db.UserPreferenceEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ConversationRepository @Inject constructor(
-    private val database: AivaDatabase
-) {
-    private val dao: ConversationDao = database.conversationDao()
-    
+class ConversationRepository {
+    private val items = MutableStateFlow<List<ConversationEntity>>(emptyList())
+
     suspend fun save(conversation: ConversationEntity) {
-        dao.insert(conversation)
+        items.value = items.value.filterNot { it.id == conversation.id } + conversation
     }
-    
-    suspend fun update(conversation: ConversationEntity) {
-        dao.update(conversation)
-    }
-    
-    suspend fun get(id: String): ConversationEntity? {
-        return dao.getById(id)
-    }
-    
+
+    suspend fun update(conversation: ConversationEntity) = save(conversation)
+
+    suspend fun get(id: String): ConversationEntity? = items.value.firstOrNull { it.id == id }
+
     fun getAll(limit: Int = 50, offset: Int = 0): Flow<List<ConversationEntity>> {
-        return dao.getAll(limit, offset)
+        return items.map { it.drop(offset).take(limit) }
     }
-    
-    fun getAllFlow(): Flow<List<ConversationEntity>> {
-        return dao.getAllFlow()
-    }
-    
+
+    fun getAllFlow(): Flow<List<ConversationEntity>> = items
+
     suspend fun delete(id: String) {
-        dao.delete(id)
+        items.value = items.value.filterNot { it.id == id }
     }
-    
+
     suspend fun archive(id: String) {
-        dao.archive(id)
+        items.value = items.value.map { if (it.id == id) it.copy(isArchived = true) else it }
     }
-    
-    suspend fun getCount(): Int {
-        return dao.getCount()
-    }
-    
+
+    suspend fun getCount(): Int = items.value.count { !it.isArchived }
+
     fun createNew(title: String, modelId: String, messages: List<ChatMessage>): ConversationEntity {
         val id = java.util.UUID.randomUUID().toString()
         return ConversationEntity.fromMessages(id, title, modelId, messages)
     }
 }
 
-@Singleton
-class TaskHistoryRepository @Inject constructor(
-    private val database: AivaDatabase
-) {
-    private val dao: TaskHistoryDao = database.taskHistoryDao()
-    
+class TaskHistoryRepository {
+    private val items = MutableStateFlow<List<TaskHistoryEntity>>(emptyList())
+
     suspend fun save(task: TaskHistoryEntity) {
-        dao.insert(task)
+        items.value = items.value + task
     }
-    
+
     fun getRecent(limit: Int = 20, offset: Int = 0): Flow<List<TaskHistoryEntity>> {
-        return dao.getRecent(limit, offset)
+        return items.map { it.sortedByDescending { row -> row.startedAt }.drop(offset).take(limit) }
     }
-    
+
     fun getByState(state: TaskState): Flow<List<TaskHistoryEntity>> {
-        return dao.getByState(state.name)
+        return items.map { it.filter { row -> row.state == state.name } }
     }
-    
+
     suspend fun cleanupOld(days: Int = 30) {
         val before = System.currentTimeMillis() - (days * 24 * 60 * 60 * 1000L)
-        dao.deleteOld(before)
+        items.value = items.value.filter { it.startedAt >= before }
     }
 }
 
-@Singleton
-class UserPreferencesRepository @Inject constructor(
-    private val database: AivaDatabase
-) {
-    private val dao: UserPreferenceDao = database.userPreferenceDao()
-    
+class UserPreferencesRepository {
+    private val items = MutableStateFlow<Map<String, UserPreferenceEntity>>(emptyMap())
+
     suspend fun setString(key: String, value: String) {
-        dao.set(UserPreferenceEntity(key, value))
+        items.value = items.value + (key to UserPreferenceEntity(key, value))
     }
-    
+
     suspend fun getString(key: String, defaultValue: String = ""): String {
-        return dao.get(key)?.value ?: defaultValue
+        return items.value[key]?.value ?: defaultValue
     }
-    
-    suspend fun setBoolean(key: String, value: Boolean) {
-        setString(key, value.toString())
-    }
-    
+
+    suspend fun setBoolean(key: String, value: Boolean) = setString(key, value.toString())
+
     suspend fun getBoolean(key: String, defaultValue: Boolean = false): Boolean {
-        return getString(key, defaultValue.toString()).toBooleanOrNull() ?: defaultValue
+        return getString(key, defaultValue.toString()).toBooleanStrictOrNull() ?: defaultValue
     }
-    
-    suspend fun setLong(key: String, value: Long) {
-        setString(key, value.toString())
-    }
-    
+
+    suspend fun setLong(key: String, value: Long) = setString(key, value.toString())
+
     suspend fun getLong(key: String, defaultValue: Long = 0L): Long {
         return getString(key, defaultValue.toString()).toLongOrNull() ?: defaultValue
     }
-    
+
     suspend fun delete(key: String) {
-        dao.delete(key)
+        items.value = items.value - key
     }
-    
-    fun getAll(): Flow<List<UserPreferenceEntity>> {
-        return dao.getAll()
-    }
+
+    fun getAll(): Flow<List<UserPreferenceEntity>> = items.map { it.values.toList() }
 }
 
-@Singleton
-class GameProfileRepository @Inject constructor(
-    private val database: AivaDatabase
-) {
-    private val dao: GameProfileDao = database.gameProfileDao()
-    
+class GameProfileRepository {
+    private val items = MutableStateFlow<List<GameProfileEntity>>(emptyList())
+
     suspend fun save(profile: GameProfileEntity) {
-        dao.insert(profile)
+        items.value = items.value.filterNot { it.id == profile.id } + profile
     }
-    
+
     suspend fun update(profile: GameProfileEntity) {
-        dao.update(profile.copy(updatedAt = System.currentTimeMillis()))
+        save(profile.copy(updatedAt = System.currentTimeMillis()))
     }
-    
-    suspend fun get(id: String): GameProfileEntity? {
-        return dao.getById(id)
-    }
-    
+
+    suspend fun get(id: String): GameProfileEntity? = items.value.firstOrNull { it.id == id }
+
     fun getByPackageName(packageName: String): Flow<List<GameProfileEntity>> {
-        return dao.getByPackageName(packageName)
+        return items.map { it.filter { row -> row.packageName == packageName } }
     }
-    
-    fun getActive(): Flow<GameProfileEntity?> {
-        return dao.getActive()
-    }
-    
-    fun getAll(): Flow<List<GameProfileEntity>> {
-        return dao.getAll()
-    }
-    
+
+    fun getActive(): Flow<GameProfileEntity?> = items.map { it.firstOrNull { row -> row.isActive } }
+
+    fun getAll(): Flow<List<GameProfileEntity>> = items
+
     suspend fun delete(id: String) {
-        dao.delete(id)
+        items.value = items.value.filterNot { it.id == id }
     }
-    
+
     suspend fun setActive(id: String) {
-        dao.getAll().first().forEach { profile ->
-            dao.update(profile.copy(isActive = profile.id == id))
-        }
+        items.value = items.value.map { it.copy(isActive = it.id == id) }
     }
 }
 
-@Singleton
-class ApiUsageRepository @Inject constructor(
-    private val database: AivaDatabase
-) {
-    private val dao: ApiUsageDao = database.apiUsageDao()
-    
+class ApiUsageRepository {
+    private val items = MutableStateFlow<List<ApiUsageEntity>>(emptyList())
+
     suspend fun recordUsage(usage: ApiUsageEntity) {
-        dao.insert(usage)
+        items.value = items.value + usage
     }
-    
+
     fun getByModel(modelId: String, limit: Int = 100): Flow<List<ApiUsageEntity>> {
-        return dao.getByModel(modelId, limit)
+        return items.map { it.filter { row -> row.modelId == modelId }.take(limit) }
     }
-    
+
     suspend fun getTotalTokensSince(since: Long): Long {
-        return dao.getTotalTokensSince(since) ?: 0
+        return items.value.filter { it.timestamp > since }.sumOf { it.totalTokens.toLong() }
     }
-    
+
     suspend fun getAverageLatency(modelId: String, since: Long): Double? {
-        return dao.getAverageLatency(modelId, since)
+        val rows = items.value.filter { it.modelId == modelId && it.timestamp > since }
+        if (rows.isEmpty()) return null
+        return rows.map { it.latencyMs.toDouble() }.average()
     }
 }

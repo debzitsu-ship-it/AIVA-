@@ -11,9 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.aiva.ui.theme.AivaTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class PermissionOnboardingActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

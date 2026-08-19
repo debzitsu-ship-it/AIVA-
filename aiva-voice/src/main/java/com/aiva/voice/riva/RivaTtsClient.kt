@@ -5,11 +5,8 @@ import com.aiva.core.voice.TtsRequest
 import com.aiva.core.voice.VoiceState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class RivaTtsClient @Inject constructor() {
+class RivaTtsClient constructor() {
 
     private val _state = MutableStateFlow(VoiceState.IDLE)
     val state: StateFlow<VoiceState> = _state

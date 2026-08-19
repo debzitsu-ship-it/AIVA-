@@ -13,11 +13,8 @@ import com.aiva.task.planner.TaskPlanner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class TaskExecutor @Inject constructor(
+class TaskExecutor constructor(
     private val intentClassifier: IntentClassifier,
     private val taskPlanner: TaskPlanner,
     private val actionExecutor: ActionExecutor

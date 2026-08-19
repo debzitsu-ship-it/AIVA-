@@ -3,11 +3,8 @@ package com.aiva.game.vision
 import com.aiva.core.game.FrameData
 import com.aiva.core.game.GameProfile
 import com.aiva.core.observation.VisionDetection
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class GameVisionProcessor @Inject constructor() {
+class GameVisionProcessor constructor() {
 
     fun processFrame(
         frameData: FrameData,

@@ -12,11 +12,8 @@ import com.aiva.core.task.IntentType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.decodeFromString
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class IntentClassifier @Inject constructor(
+class IntentClassifier constructor(
     private val nimClient: NimClient,
     private val modelRegistry: ModelRegistry,
     private val modelRouter: ModelRouter

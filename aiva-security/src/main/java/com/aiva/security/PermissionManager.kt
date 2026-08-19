@@ -10,13 +10,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class PermissionManager @Inject constructor(
-    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context
-) {
+class PermissionManager(private val context: Context) {
     
     private val _permissionStates = MutableStateFlow<Map<String, PermissionState>>(emptyMap())
     val permissionStates: StateFlow<Map<String, PermissionState>> = _permissionStates

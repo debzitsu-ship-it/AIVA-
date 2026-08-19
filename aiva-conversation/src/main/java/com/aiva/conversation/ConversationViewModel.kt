@@ -1,39 +1,66 @@
 package com.aiva.conversation
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.aiva.ai.client.NimClient
 import com.aiva.ai.fusion.MultiModelFusion
 import com.aiva.ai.registry.ModelRegistry
 import com.aiva.ai.router.ModelRouter
+import com.aiva.automation.accessibility.AccessibilityController
+import com.aiva.automation.accessibility.AivaAccessibilityService
+import com.aiva.automation.executor.ActionExecutor
+import com.aiva.core.action.Action
+import com.aiva.core.action.ActionResult
 import com.aiva.core.model.ChatCompletionRequest
 import com.aiva.core.model.ChatMessage
 import com.aiva.core.model.ModelInfo
-import com.aiva.core.model.StreamChunk
+import com.aiva.core.observation.ScreenState
 import com.aiva.core.security.ApiKeyEntry
-import com.aiva.security.ApiKeyManager
 import com.aiva.core.task.Intent
-import com.aiva.core.task.IntentType
 import com.aiva.core.task.TaskState
 import com.aiva.memory.repository.ConversationRepository
+import com.aiva.security.ApiKeyManager
+import com.aiva.task.classifier.IntentClassifier
 import com.aiva.task.executor.TaskExecutor
+import com.aiva.task.planner.TaskPlanner
+import com.aiva.voice.riva.RivaAsrClient
+import com.aiva.voice.riva.RivaTtsClient
+import com.aiva.voice.service.VoiceInputService
+import com.aiva.voice.service.VoiceOutputService
 import com.aiva.voice.viewmodel.VoiceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@dagger.hilt.android.lifecycle.HiltViewModel
-class ConversationViewModel @Inject constructor(
-    private val nimClient: NimClient,
-    private val modelRegistry: ModelRegistry,
-    private val modelRouter: ModelRouter,
-    private val multiModelFusion: MultiModelFusion,
-    private val apiKeyManager: ApiKeyManager,
-    private val conversationRepository: ConversationRepository,
-    private val taskExecutor: TaskExecutor,
-    private val voice: VoiceViewModel
-) : ViewModel() {
+class ConversationViewModel(application: Application) : AndroidViewModel(application) {
+    private val apiKeyManager = ApiKeyManager(application)
+    private val nimClient = NimClient()
+    private val modelRegistry = ModelRegistry()
+    private val modelRouter = ModelRouter(modelRegistry)
+    private val multiModelFusion = MultiModelFusion(nimClient, modelRegistry)
+    private val conversationRepository = ConversationRepository()
+    private val taskExecutor = TaskExecutor(
+        IntentClassifier(nimClient, modelRegistry, modelRouter),
+        TaskPlanner(nimClient, modelRegistry, modelRouter),
+        ActionExecutor(
+            AivaAccessibilityService.getInstance() ?: object : AccessibilityController {
+                override fun executeAction(action: Action): ActionResult {
+                    return ActionResult(success = false, message = "Accessibility service not enabled")
+                }
+
+                override val screenState: StateFlow<ScreenState?> = MutableStateFlow(null)
+                override val serviceEnabled: StateFlow<Boolean> = MutableStateFlow(false)
+                override fun getCurrentScreenState(): ScreenState? = null
+                override fun cancelCurrentAction() {}
+            }
+        )
+    )
+    private val voice = VoiceViewModel(
+        apiKeyManager,
+        VoiceInputService(RivaAsrClient()),
+        VoiceOutputService(RivaTtsClient())
+    )
     
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages: StateFlow<List<ChatMessage>> = _messages

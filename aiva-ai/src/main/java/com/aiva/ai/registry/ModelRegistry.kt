@@ -4,11 +4,8 @@ import com.aiva.core.model.ModelCapabilities
 import com.aiva.core.model.ModelInfo
 import com.aiva.core.model.ReasoningLevel
 import com.aiva.core.model.SpeedProfile
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ModelRegistry @Inject constructor() {
+class ModelRegistry constructor() {
     
     private val allModels: Map<String, ModelInfo> = mapOf(
         "z-ai/glm-5.2" to ModelInfo(
