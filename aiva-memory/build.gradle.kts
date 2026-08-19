@@ -1,9 +1,10 @@
-println("::warning title=config::aiva-memory build.gradle.kts")
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
 }
+
+println("::warning title=config::aiva-memory after plugins")
 
 android {
     namespace = "com.aiva.memory"

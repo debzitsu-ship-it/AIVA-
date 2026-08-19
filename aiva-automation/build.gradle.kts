@@ -1,9 +1,10 @@
-println("::warning title=config::aiva-automation build.gradle.kts")
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
 }
+
+println("::warning title=config::aiva-automation after plugins")
 
 android {
     namespace = "com.aiva.automation"

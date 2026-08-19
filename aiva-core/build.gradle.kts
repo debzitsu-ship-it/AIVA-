@@ -1,9 +1,10 @@
-println("::warning title=config::aiva-core build.gradle.kts")
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
 }
+
+println("::warning title=config::aiva-core after plugins")
 
 android {
     namespace = "com.aiva.core"

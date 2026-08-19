@@ -1,10 +1,11 @@
-println("::warning title=config::aiva-ui build.gradle.kts")
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
 }
+
+println("::warning title=config::aiva-ui after plugins")
 
 android {
     namespace = "com.aiva.ui"

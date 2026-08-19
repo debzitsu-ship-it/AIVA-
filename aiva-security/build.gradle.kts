@@ -1,9 +1,10 @@
-println("::warning title=config::aiva-security build.gradle.kts")
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
 }
+
+println("::warning title=config::aiva-security after plugins")
 
 android {
     namespace = "com.aiva.security"
