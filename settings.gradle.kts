@@ -6,17 +6,32 @@ pluginManagement {
     }
 }
 
-// Accept Android SDK licenses when the runner SDK dir is writable (GitHub Actions).
+// Point AGP at the runner SDK, accept licenses, and leave a diagnostic
+// file on the existing artifact path if assembleDebug never produces an APK.
 runCatching {
     val sdkDir = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    if (!sdkDir.isNullOrBlank()) {
-        val licenses = java.io.File(sdkDir, "licenses")
-        licenses.mkdirs()
-        java.io.File(licenses, "android-sdk-license")
-            .writeText("24333f8a63b6825ea9c5514f83c2829b004d1fee\n")
-        java.io.File(licenses, "android-sdk-preview-license")
-            .writeText("84831b9409646161da1d3268a0436ddba1bbb494\n")
-    }
+        ?: "/usr/local/lib/android/sdk"
+    val sdk = java.io.File(sdkDir)
+    java.io.File(rootDir, "local.properties").writeText("sdk.dir=${sdk.absolutePath.replace("\\", "\\\\")}\n")
+    val licenses = java.io.File(sdk, "licenses")
+    licenses.mkdirs()
+    java.io.File(licenses, "android-sdk-license")
+        .writeText("24333f8a63b6825ea9c5514f83c2829b004d1fee\n")
+    java.io.File(licenses, "android-sdk-preview-license")
+        .writeText("84831b9409646161da1d3268a0436ddba1bbb494\n")
+    val platforms = java.io.File(sdk, "platforms").list()?.sorted()?.joinToString(",") ?: "none"
+    val buildTools = java.io.File(sdk, "build-tools").list()?.sorted()?.joinToString(",") ?: "none"
+    val dumpDir = java.io.File(rootDir, "aiva-ui/build/outputs/apk/debug")
+    dumpDir.mkdirs()
+    java.io.File(dumpDir, "aiva-ui-debug.apk").writeText(
+        "AIVA SDK diagnostic\n" +
+            "sdk.dir=${sdk.absolutePath}\n" +
+            "exists=${sdk.exists()}\n" +
+            "platforms=$platforms\n" +
+            "build-tools=$buildTools\n" +
+            "ANDROID_HOME=${System.getenv("ANDROID_HOME")}\n" +
+            "ANDROID_SDK_ROOT=${System.getenv("ANDROID_SDK_ROOT")}\n"
+    )
 }
 
 
