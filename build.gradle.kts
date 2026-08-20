@@ -6,20 +6,19 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
 }
 
+println("::notice title=config::root after plugins")
+
 allprojects {
     group = "com.aiva"
     version = "1.0.0"
 }
 
-gradle.buildFinished { result ->
-    val failure = result.failure ?: return@buildFinished
-    val chain = generateSequence(failure as Throwable) { it.cause }
-        .mapNotNull { it.message }
-        .distinct()
-        .joinToString(" | ")
-        .replace("\n", " ")
-        .take(6500)
-    println("::error title=Gradle failed::$chain")
+gradle.beforeProject {
+    println("::notice title=config::before ${it.path}")
+}
+
+gradle.afterProject {
+    println("::notice title=config::after ${it.path}")
 }
 
 tasks.register("clean", Delete::class) {
