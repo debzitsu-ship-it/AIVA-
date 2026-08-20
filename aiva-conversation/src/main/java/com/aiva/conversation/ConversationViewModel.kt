@@ -7,11 +7,6 @@ import com.aiva.ai.client.NimClient
 import com.aiva.ai.fusion.MultiModelFusion
 import com.aiva.ai.registry.ModelRegistry
 import com.aiva.ai.router.ModelRouter
-import com.aiva.automation.accessibility.AccessibilityController
-import com.aiva.automation.accessibility.AivaAccessibilityService
-import com.aiva.automation.executor.ActionExecutor
-import com.aiva.core.action.Action
-import com.aiva.core.action.ActionResult
 import com.aiva.core.model.ChatCompletionRequest
 import com.aiva.core.model.ChatMessage
 import com.aiva.core.model.ModelInfo
@@ -40,22 +35,7 @@ class ConversationViewModel(application: Application) : AndroidViewModel(applica
     private val modelRouter = ModelRouter(modelRegistry)
     private val multiModelFusion = MultiModelFusion(nimClient, modelRegistry)
     private val conversationRepository = ConversationRepository()
-    private val taskExecutor = TaskExecutor(
-        IntentClassifier(nimClient, modelRegistry, modelRouter),
-        TaskPlanner(nimClient, modelRegistry, modelRouter),
-        ActionExecutor(
-            AivaAccessibilityService.getInstance() ?: object : AccessibilityController {
-                override fun executeAction(action: Action): ActionResult {
-                    return ActionResult(success = false, message = "Accessibility service not enabled")
-                }
-
-                override val screenState: StateFlow<ScreenState?> = MutableStateFlow(null)
-                override val serviceEnabled: StateFlow<Boolean> = MutableStateFlow(false)
-                override fun getCurrentScreenState(): ScreenState? = null
-                override fun cancelCurrentAction() {}
-            }
-        )
-    )
+    private val taskExecutor = TaskExecutor()
     private val voice = VoiceViewModel(
         apiKeyManager,
         VoiceInputService(RivaAsrClient()),
