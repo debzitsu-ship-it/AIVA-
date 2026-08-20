@@ -33,7 +33,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
         _serviceEnabled.value = true
     }
 
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
+    override fun onAccessibilityEvent(event: AccessibilityEvent) = Unit
 
     override fun onInterrupt() {
         _serviceEnabled.value = false
