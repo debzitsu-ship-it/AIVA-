@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+println("::notice title=config::aiva-observation after plugins")
 
 android {
     namespace = "com.aiva.observation"
