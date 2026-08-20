@@ -42,7 +42,6 @@ data class Intent(
     val targetApp: String? = null
 )
 
-@Serializable
 data class TaskPlan(
     val id: String,
     val intent: Intent,
@@ -51,7 +50,6 @@ data class TaskPlan(
     val requiredCapabilities: Set<String> = emptySet()
 )
 
-@Serializable
 data class PlanStep(
     val id: String,
     val action: com.aiva.core.action.Action,
@@ -61,7 +59,6 @@ data class PlanStep(
     val verificationQuery: String? = null
 )
 
-@Serializable
 data class TaskExecution(
     val plan: TaskPlan,
     val currentStepIndex: Int = 0,
