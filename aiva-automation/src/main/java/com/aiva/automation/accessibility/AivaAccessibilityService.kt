@@ -1,14 +1,12 @@
 package com.aiva.automation.accessibility
 
-import android.accessibilityservice.AccessibilityService
-import android.view.accessibility.AccessibilityEvent
 import com.aiva.core.action.Action
 import com.aiva.core.action.ActionResult
 import com.aiva.core.observation.ScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class AivaAccessibilityService : AccessibilityService(), AccessibilityController {
+class AivaAccessibilityService : AccessibilityController {
 
     companion object {
         @Volatile
@@ -22,27 +20,6 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
 
     private val _serviceEnabled = MutableStateFlow(false)
     override val serviceEnabled: StateFlow<Boolean> = _serviceEnabled
-
-    override fun onCreate() {
-        super.onCreate()
-        instance = this
-    }
-
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-        _serviceEnabled.value = true
-    }
-
-    override fun onAccessibilityEvent(event: AccessibilityEvent) = Unit
-
-    override fun onInterrupt() {
-        _serviceEnabled.value = false
-    }
-
-    override fun onDestroy() {
-        instance = null
-        super.onDestroy()
-    }
 
     override fun executeAction(action: Action): ActionResult {
         return ActionResult(success = false, message = "Accessibility actions are not available in this build")
