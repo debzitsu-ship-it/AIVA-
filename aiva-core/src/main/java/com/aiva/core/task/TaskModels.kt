@@ -68,7 +68,6 @@ data class TaskExecution(
     val endTime: Long? = null
 )
 
-@Serializable
 data class StepResult(
     val stepId: String,
     val action: com.aiva.core.action.Action,
