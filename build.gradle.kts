@@ -17,9 +17,24 @@ tasks.register("clean", Delete::class) {
 
 subprojects {
     afterEvaluate {
-        tasks.matching { it.name == "processDebugManifest" || it.name == "compileDebugKotlin" }.configureEach {
-            val taskName = name
-            doLast { println("::warning title=${project.name}::ok $taskName") }
+        val dump = tasks.register("reportKotlinFailures") {
+            doLast {
+                val buildDirFile = layout.buildDirectory.get().asFile
+                if (!buildDirFile.exists()) {
+                    println("::warning title=${project.name}::no build dir")
+                    return@doLast
+                }
+                val names = buildDirFile.walkTopDown().maxDepth(5)
+                    .filter { it.isFile }
+                    .map { it.relativeTo(buildDirFile).path }
+                    .take(30)
+                    .joinToString(",")
+                println("::warning title=${project.name} files::$names")
+            }
+        }
+        tasks.matching { it.name == "compileDebugKotlin" }.configureEach {
+            doLast { println("::warning title=${project.name}::ok compileDebugKotlin") }
+            finalizedBy(dump)
         }
     }
 }
