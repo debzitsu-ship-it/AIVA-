@@ -267,21 +267,10 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
             ?.findFocus(AccessibilityNodeInfo.FOCUS_INPUT)
         
         return if (node != null && node.isEditable) {
-            val success = if (action.replace) {
-                // Clear first then type
-                node.performAction(AccessibilityNodeInfo.ACTION_SELECT_ALL)
-                Thread.sleep(50)
-                node.text?.let { _ -> }
-                Bundle().apply { putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, action.text) }
-                node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, Bundle().apply {
-                    putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, action.text)
-                })
-            } else {
-                Bundle().apply { putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, action.text) }
-                node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, Bundle().apply {
-                    putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, action.text)
-                })
+            val args = Bundle().apply {
+                putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, action.text)
             }
+            val success = node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args)
             node.recycle()
             ActionResult(success = success, message = if (success) "Typed text" else "Type failed")
         } else {
@@ -408,7 +397,7 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
         queue.add(root)
         
         while (queue.isNotEmpty()) {
-            val node = queue.poll()
+            val node = queue.poll() ?: break
             nodes.add(node)
             for (i in 0 until node.childCount) {
                 node.getChild(i)?.let { queue.add(it) }
@@ -454,11 +443,8 @@ class AivaAccessibilityService : AccessibilityService(), AccessibilityController
         )
     }
     
-    private fun getTopActivityName(): String? {
-        val am = getSystemService(android.app.ActivityManager::class.java)
-        return am?.runningTasks(1)?.firstOrNull()?.topActivity?.className
-    }
-    
+    private fun getTopActivityName(): String? = null
+
     private fun getScreenWidth(): Int = resources.displayMetrics.widthPixels
     private fun getScreenHeight(): Int = resources.displayMetrics.heightPixels
     
