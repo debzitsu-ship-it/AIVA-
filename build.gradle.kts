@@ -30,12 +30,18 @@ subprojects {
                     .take(40)
                     .joinToString(",")
                 println("::warning title=${project.name} files::$names")
-                buildDirFile.walkTopDown().maxDepth(8).forEach { file ->
-                    if (!file.isFile || file.length() !in 1..80_000L) return@forEach
-                    if (file.extension !in setOf("txt", "log", "out")) return@forEach
-                    val text = runCatching { file.readText() }.getOrDefault("")
-                    if (text.isBlank()) return@forEach
-                    println("::error title=${project.name} ${file.name}::${text.take(2000).replace("\n", " | ")}")
+                val console = rootProject.file("build/gradle-console.txt")
+                if (console.exists()) {
+                    val errors = console.readLines().filter { line ->
+                        line.contains("e: ") || line.contains("error:") || line.contains("FAILED") ||
+                            line.contains("e:") && line.contains(".kt")
+                    }.take(40)
+                    if (errors.isNotEmpty()) {
+                        println("::error title=${project.name} console::${errors.joinToString(" | ").take(6500)}")
+                    } else {
+                        val tail = console.readLines().takeLast(30).joinToString(" | ")
+                        println("::warning title=${project.name} console tail::${tail.take(4000)}")
+                    }
                 }
             }
         }

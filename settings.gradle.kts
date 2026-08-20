@@ -52,3 +52,33 @@ include(
 gradle.projectsEvaluated {
     println("::warning title=config::projects evaluated")
 }
+
+runCatching {
+    val outDir = java.io.File(rootDir, "aiva-ui/build/outputs/apk/debug")
+    outDir.mkdirs()
+    val logFile = java.io.File(rootDir, "build/gradle-console.txt")
+    logFile.parentFile.mkdirs()
+    val originalOut = System.out
+    val originalErr = System.err
+    val fileStream = java.io.FileOutputStream(logFile, true)
+    fun tee(original: java.io.PrintStream): java.io.PrintStream {
+        val stream = object : java.io.OutputStream() {
+            override fun write(b: Int) {
+                original.write(b)
+                fileStream.write(b)
+            }
+            override fun write(b: ByteArray, off: Int, len: Int) {
+                original.write(b, off, len)
+                fileStream.write(b, off, len)
+            }
+            override fun flush() {
+                original.flush()
+                fileStream.flush()
+            }
+        }
+        return java.io.PrintStream(stream, true)
+    }
+    System.setOut(tee(originalOut))
+    System.setErr(tee(originalErr))
+    println("::notice title=log::teeing Gradle console to ${logFile.absolutePath}")
+}
