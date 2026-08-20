@@ -49,9 +49,9 @@ class SecurityTest {
             SecurityEvent.KeyAdded("key3"),
             SecurityEvent.KeyRemoved("key4"),
             SecurityEvent.FailedAttempt("reason"),
-            SecurityEvent.BiometricPromptShown,
-            SecurityEvent.BiometricSuccess,
-            SecurityEvent.BiometricFailed
+            SecurityEvent.BiometricPromptShown(),
+            SecurityEvent.BiometricSuccess(),
+            SecurityEvent.BiometricFailed()
         )
         
         events.forEach { event ->
