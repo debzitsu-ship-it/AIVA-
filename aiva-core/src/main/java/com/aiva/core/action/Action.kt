@@ -116,6 +116,7 @@ data class Point(
     val y: Float
 )
 
+@Serializable
 enum class ScrollDirection {
     UP, DOWN, LEFT, RIGHT
 }

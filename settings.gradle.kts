@@ -48,3 +48,7 @@ include(
     ":aiva-security",
     ":aiva-memory"
 )
+
+gradle.projectsEvaluated {
+    println("::warning title=config::projects evaluated")
+}

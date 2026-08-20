@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-println("::notice title=config::aiva-ai after plugins")
 
 android {
     namespace = "com.aiva.ai"

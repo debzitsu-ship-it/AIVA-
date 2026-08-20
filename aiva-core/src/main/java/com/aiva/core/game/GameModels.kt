@@ -41,10 +41,12 @@ data class ControlRegion(
     val holdDuration: Int = 0
 )
 
+@Serializable
 enum class TouchType {
     TAP, DOUBLE_TAP, LONG_PRESS, SWIPE, HOLD, JOYSTICK
 }
 
+@Serializable
 enum class SwipeDirection {
     UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT
 }
@@ -59,6 +61,7 @@ data class DetectionRegion(
     val colorProfile: String? = null
 )
 
+@Serializable
 enum class DetectionType {
     TEMPLATE_MATCH, COLOR_DETECTION, OCR, CUSTOM_MODEL
 }
@@ -87,14 +90,17 @@ data class GameMode(
     val assistLevel: AssistLevel = AssistLevel.FULL
 )
 
+@Serializable
 enum class GameModeType {
     MANUAL, ASSIST, FULL_AUTOMATION, OBSERVE_ONLY, PAUSED
 }
 
+@Serializable
 enum class GameStrategy {
     AGGRESSIVE, DEFENSIVE, OBJECTIVE_FOCUSED, SURVIVAL, CUSTOM
 }
 
+@Serializable
 enum class AssistLevel {
     NONE, LOW, MEDIUM, HIGH, FULL
 }
@@ -124,6 +130,7 @@ data class TouchCommand(
     val pressure: Float = 1.0f
 )
 
+@Serializable
 enum class TouchAction {
     DOWN, MOVE, UP, TAP, SWIPE
 }

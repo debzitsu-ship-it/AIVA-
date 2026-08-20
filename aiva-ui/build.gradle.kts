@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-println("::notice title=config::aiva-ui after plugins")
 
 android {
     namespace = "com.aiva.ui"

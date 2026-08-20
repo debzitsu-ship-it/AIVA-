@@ -18,6 +18,7 @@ data class VisionDetection(
     val category: DetectionCategory
 )
 
+@Serializable
 enum class DetectionCategory {
     BUTTON, ICON, TEXT, MENU, DIALOG, FORM_FIELD,
     GAME_HUD, HEALTH_BAR, AMMO, MINIMAP, CROSSHAIR,
@@ -107,6 +108,7 @@ data class GameEntity(
     val health: Int? = null
 )
 
+@Serializable
 enum class EntityType {
     PLAYER, ENEMY, ALLY, VEHICLE, ITEM, OBJECTIVE
 }

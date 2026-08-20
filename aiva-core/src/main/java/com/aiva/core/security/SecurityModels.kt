@@ -15,6 +15,7 @@ data class ApiKeyEntry(
     val testResult: KeyTestResult? = null
 )
 
+@Serializable
 enum class KeyTestResult {
     UNTESTED,
     TESTING,

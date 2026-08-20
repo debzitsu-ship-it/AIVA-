@@ -2,6 +2,7 @@ package com.aiva.core.task
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 enum class TaskState {
     IDLE,
     LISTENING,
@@ -16,6 +17,7 @@ enum class TaskState {
     STOPPED
 }
 
+@Serializable
 enum class IntentType {
     CHAT,
     QUESTION,
