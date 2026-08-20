@@ -24,12 +24,19 @@ subprojects {
                     println("::warning title=${project.name}::no build dir")
                     return@doLast
                 }
-                val names = buildDirFile.walkTopDown().maxDepth(5)
+                val names = buildDirFile.walkTopDown().maxDepth(6)
                     .filter { it.isFile }
                     .map { it.relativeTo(buildDirFile).path }
-                    .take(30)
+                    .take(40)
                     .joinToString(",")
                 println("::warning title=${project.name} files::$names")
+                buildDirFile.walkTopDown().maxDepth(8).forEach { file ->
+                    if (!file.isFile || file.length() !in 1..80_000L) return@forEach
+                    if (file.extension !in setOf("txt", "log", "out")) return@forEach
+                    val text = runCatching { file.readText() }.getOrDefault("")
+                    if (text.isBlank()) return@forEach
+                    println("::error title=${project.name} ${file.name}::${text.take(2000).replace("\n", " | ")}")
+                }
             }
         }
         tasks.matching { it.name == "compileDebugKotlin" }.configureEach {
