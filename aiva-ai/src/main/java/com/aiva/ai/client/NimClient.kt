@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package com.aiva.ai.client
 
 import com.aiva.core.model.ChatCompletionRequest
