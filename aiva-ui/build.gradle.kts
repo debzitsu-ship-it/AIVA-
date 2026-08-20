@@ -125,3 +125,8 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(libs.junit)
 }
+
+tasks.matching { it.name == "processDebugManifest" || it.name == "compileDebugKotlin" || it.name == "mergeDebugResources" }.configureEach {
+    val taskName = name
+    doLast { println("::warning title=aiva-ui::ok $taskName") }
+}
