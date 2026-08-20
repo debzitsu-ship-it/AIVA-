@@ -11,10 +11,6 @@ allprojects {
     version = "1.0.0"
 }
 
-gradle.taskGraph.whenReady {
-    println("::notice title=Gradle::task graph ready (${it.allTasks.size} tasks)")
-}
-
 gradle.buildFinished { result ->
     val failure = result.failure ?: return@buildFinished
     val chain = generateSequence(failure as Throwable) { it.cause }
