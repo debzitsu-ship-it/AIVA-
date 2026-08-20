@@ -52,3 +52,16 @@ include(
 gradle.projectsEvaluated {
     println("::warning title=config::projects evaluated")
 }
+
+gradle.taskGraph.whenReady {
+    println("::warning title=graph::${it.allTasks.size} tasks")
+}
+
+gradle.buildFinished {
+    val failure = it.failure
+    if (failure != null) {
+        println("::error title=Gradle failed::${failure}")
+    } else {
+        println("::notice title=Gradle::success")
+    }
+}
