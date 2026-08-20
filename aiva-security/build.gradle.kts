@@ -22,7 +22,6 @@ android {
 dependencies {
     implementation(project(":aiva-core"))
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.security.crypto)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)

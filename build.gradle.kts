@@ -30,6 +30,10 @@ subprojects {
                     .take(40)
                     .joinToString(",")
                 println("::warning title=${project.name} files::$names")
+                val dirty = buildDirFile.resolve("kotlin/compileDebugKotlin/cacheable/dirty-sources.txt")
+                if (dirty.exists()) {
+                    println("::error title=${project.name} dirty::${dirty.readText().take(1500).replace("\n", " | ")}")
+                }
                 val console = rootProject.file("build/gradle-console.txt")
                 if (console.exists()) {
                     val errors = console.readLines().filter { line ->
