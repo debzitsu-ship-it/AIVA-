@@ -2,25 +2,22 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.hilt)
 }
+
 
 android {
     namespace = "com.aiva.ai"
+
     compileSdk = libs.versions.compileSdk.get().toInt()
-
-    defaultConfig {
-        minSdk = libs.versions.minSdk.get().toInt()
-    }
-
+    defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-
-    kotlinOptions { jvmTarget = "17" }
-
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs += listOf("-opt-in=kotlinx.serialization.ExperimentalSerializationApi")
+    }
     testOptions { unitTests.isReturnDefaultValues = true }
     lint { abortOnError = false; checkReleaseBuilds = false }
 }
@@ -36,8 +33,6 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.junit)

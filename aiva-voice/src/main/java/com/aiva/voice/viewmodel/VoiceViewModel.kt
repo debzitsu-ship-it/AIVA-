@@ -14,8 +14,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Voice manager - singleton service that can be injected into ViewModels.
@@ -23,8 +21,7 @@ import javax.inject.Singleton
  * injected into another ViewModel. Now implemented as a plain Singleton with
  * its own CoroutineScope so it can be shared across ViewModels and UI.
  */
-@Singleton
-class VoiceViewModel @Inject constructor(
+class VoiceViewModel constructor(
     private val apiKeyManager: ApiKeyManager,
     private val voiceInputService: VoiceInputService,
     private val voiceOutputService: VoiceOutputService

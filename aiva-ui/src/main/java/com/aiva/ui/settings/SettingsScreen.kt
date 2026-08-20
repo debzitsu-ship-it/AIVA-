@@ -11,11 +11,5 @@ import androidx.compose.ui.unit.dp
 fun SettingsScreen() {
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Settings")
-        Text("API keys, models, voice, automation, and privacy.")
     }
 }
-
-data class SettingsSection(
-    val title: String,
-    val description: String = ""
-)

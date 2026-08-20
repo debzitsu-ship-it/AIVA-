@@ -1,86 +1,28 @@
 package com.aiva.core.action
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 sealed interface Action {
-    @Serializable
     data class LaunchApp(val packageName: String, val action: String? = null) : Action
-
-    @Serializable
     data class OpenUrl(val url: String) : Action
-
-    @Serializable
     data class Tap(val target: Target) : Action
-
-    @Serializable
     data class DoubleTap(val target: Target) : Action
-
-    @Serializable
     data class LongPress(val target: Target, val duration: Int = 1000) : Action
-
-    @Serializable
-    data class Swipe(
-        val from: Point,
-        val to: Point,
-        val duration: Int = 300
-    ) : Action
-
-    @Serializable
-    data class Scroll(
-        val direction: ScrollDirection,
-        val target: Target? = null,
-        val amount: Int = 500
-    ) : Action
-
-    @Serializable
-    data class Type(
-        val text: String,
-        val target: Target? = null,
-        val replace: Boolean = false
-    ) : Action
-
-    @Serializable
-    data class ReplaceText(
-        val target: Target,
-        val newText: String
-    ) : Action
-
-    @Serializable
+    data class Swipe(val from: Point, val to: Point, val duration: Int = 300) : Action
+    data class Scroll(val direction: ScrollDirection, val target: Target? = null, val amount: Int = 500) : Action
+    data class Type(val text: String, val target: Target? = null, val replace: Boolean = false) : Action
+    data class ReplaceText(val target: Target, val newText: String) : Action
     data class Copy(val target: Target? = null) : Action
-
-    @Serializable
     data class Paste(val target: Target? = null) : Action
-
-    @Serializable
     data class Back(val unused: Int = 0) : Action
-
-    @Serializable
     data class Home(val unused: Int = 0) : Action
-
-    @Serializable
     data class Observe(val query: String) : Action
-
-    @Serializable
     data class Wait(val ms: Long) : Action
-
-    @Serializable
     data class Find(val target: Target) : Action
-
-    @Serializable
     data class Select(val target: Target, val option: String) : Action
-
-    @Serializable
     data class Finish(val result: String) : Action
-
-    @Serializable
     data class AskUser(val question: String) : Action
-
-    @Serializable
     data class Stop(val unused: Int = 0) : Action
 }
 
-@Serializable
 data class Target(
     val text: String? = null,
     val resourceId: String? = null,
@@ -96,7 +38,6 @@ data class Target(
     }
 }
 
-@Serializable
 data class NormalizedBounds(
     val left: Float,
     val top: Float,
@@ -110,7 +51,6 @@ data class NormalizedBounds(
         x >= left && x <= right && y >= top && y <= bottom
 }
 
-@Serializable
 data class Point(
     val x: Float,
     val y: Float
@@ -120,7 +60,6 @@ enum class ScrollDirection {
     UP, DOWN, LEFT, RIGHT
 }
 
-@Serializable
 data class ActionResult(
     val success: Boolean,
     val message: String? = null,

@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package com.aiva.ai.client
 
 import com.aiva.core.model.ChatCompletionRequest
@@ -16,11 +18,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class NimClient @Inject constructor() {
+class NimClient constructor() {
     private var retrofit: Retrofit? = null
     private var currentApiKey: String? = null
 

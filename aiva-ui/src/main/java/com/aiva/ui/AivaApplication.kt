@@ -1,9 +1,7 @@
 package com.aiva.ui
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
 
-@HiltAndroidApp
 class AivaApplication : Application() {
     override fun onCreate() {
         super.onCreate()

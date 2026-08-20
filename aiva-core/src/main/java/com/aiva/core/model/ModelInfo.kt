@@ -15,6 +15,7 @@ data class ModelInfo(
     val enabled: Boolean = true
 )
 
+@Serializable
 enum class SpeedProfile {
     FASTEST,
     FAST,
@@ -22,6 +23,7 @@ enum class SpeedProfile {
     SLOW
 }
 
+@Serializable
 enum class ReasoningLevel {
     NONE,
     BASIC,

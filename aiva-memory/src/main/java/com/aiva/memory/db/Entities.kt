@@ -1,16 +1,10 @@
 package com.aiva.memory.db
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.aiva.core.model.ChatMessage
-import com.aiva.core.task.TaskState
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.decodeFromString
 
-@Entity(tableName = "conversations")
 data class ConversationEntity(
-    @PrimaryKey val id: String,
+    val id: String,
     val title: String,
     val modelId: String,
     val messagesJson: String,
@@ -51,9 +45,8 @@ data class ConversationEntity(
     }
 }
 
-@Entity(tableName = "task_history")
 data class TaskHistoryEntity(
-    @PrimaryKey val id: String,
+    val id: String,
     val intentType: String,
     val originalQuery: String,
     val planJson: String,
@@ -65,16 +58,14 @@ data class TaskHistoryEntity(
     val modelUsed: String
 )
 
-@Entity(tableName = "user_preferences")
 data class UserPreferenceEntity(
-    @PrimaryKey val key: String,
+    val key: String,
     val value: String,
     val updatedAt: Long = System.currentTimeMillis()
 )
 
-@Entity(tableName = "game_profiles")
 data class GameProfileEntity(
-    @PrimaryKey val id: String,
+    val id: String,
     val name: String,
     val packageName: String,
     val profileJson: String,
@@ -83,9 +74,8 @@ data class GameProfileEntity(
     val updatedAt: Long = System.currentTimeMillis()
 )
 
-@Entity(tableName = "api_usage")
 data class ApiUsageEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val id: Long = 0,
     val modelId: String,
     val promptTokens: Int,
     val completionTokens: Int,

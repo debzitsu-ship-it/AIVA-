@@ -12,11 +12,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class VoiceOutputService @Inject constructor(
+class VoiceOutputService constructor(
     private val rivaTtsClient: RivaTtsClient
 ) {
     

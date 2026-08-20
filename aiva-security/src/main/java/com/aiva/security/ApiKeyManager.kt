@@ -1,3 +1,5 @@
+@file:OptIn(kotlinx.serialization.ExperimentalSerializationApi::class)
+
 package com.aiva.security
 
 import android.content.Context
@@ -16,13 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ApiKeyManager @Inject constructor(
-    @dagger.hilt.android.qualifiers.ApplicationContext private val context: Context
-) {
+class ApiKeyManager(private val context: Context) {
     companion object {
         private const val KEYS_KEY = "api_keys"
         private const val CONFIG_KEY = "security_config"

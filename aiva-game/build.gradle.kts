@@ -2,12 +2,12 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.kapt)
-    alias(libs.plugins.hilt)
 }
+
 
 android {
     namespace = "com.aiva.game"
+
     compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
     compileOptions {
@@ -27,8 +27,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
 
     testImplementation(kotlin("test"))
     testImplementation(libs.junit)

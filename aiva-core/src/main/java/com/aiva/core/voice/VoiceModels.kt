@@ -40,10 +40,12 @@ data class AudioConfig(
     val encoding: AudioEncoding = AudioEncoding.PCM_16BIT
 )
 
+@Serializable
 enum class AudioEncoding {
     PCM_16BIT, OPUS, FLAC
 }
 
+@Serializable
 enum class VoiceState {
     IDLE,
     LISTENING,

@@ -2,10 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.hilt)
 }
+
 
 android {
     namespace = "com.aiva.ui"
@@ -66,7 +65,18 @@ android {
 
     packaging {
         resources {
-            excludes += setOf("META-INF/*.kotlin_module", "META-INF/LICENSE.md", "META-INF/LICENSE-notice.md")
+            excludes += setOf(
+                "META-INF/*.kotlin_module",
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/DEPENDENCIES",
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1"
+            )
         }
     }
 
@@ -96,8 +106,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.service)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.material)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.runtime)
@@ -111,12 +121,12 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
-
-    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     testImplementation(kotlin("test"))
     testImplementation(libs.junit)
-    androidTestImplementation(libs.espresso.core)
+}
+
+tasks.matching { it.name == "processDebugManifest" || it.name == "compileDebugKotlin" || it.name == "mergeDebugResources" }.configureEach {
+    val taskName = name
+    doLast { println("::warning title=aiva-ui::ok $taskName") }
 }

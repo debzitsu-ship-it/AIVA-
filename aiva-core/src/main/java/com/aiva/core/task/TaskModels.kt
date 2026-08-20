@@ -2,6 +2,7 @@ package com.aiva.core.task
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 enum class TaskState {
     IDLE,
     LISTENING,
@@ -16,6 +17,7 @@ enum class TaskState {
     STOPPED
 }
 
+@Serializable
 enum class IntentType {
     CHAT,
     QUESTION,
@@ -40,7 +42,6 @@ data class Intent(
     val targetApp: String? = null
 )
 
-@Serializable
 data class TaskPlan(
     val id: String,
     val intent: Intent,
@@ -49,7 +50,6 @@ data class TaskPlan(
     val requiredCapabilities: Set<String> = emptySet()
 )
 
-@Serializable
 data class PlanStep(
     val id: String,
     val action: com.aiva.core.action.Action,
@@ -59,7 +59,6 @@ data class PlanStep(
     val verificationQuery: String? = null
 )
 
-@Serializable
 data class TaskExecution(
     val plan: TaskPlan,
     val currentStepIndex: Int = 0,
@@ -69,7 +68,6 @@ data class TaskExecution(
     val endTime: Long? = null
 )
 
-@Serializable
 data class StepResult(
     val stepId: String,
     val action: com.aiva.core.action.Action,

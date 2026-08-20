@@ -15,6 +15,7 @@ data class ApiKeyEntry(
     val testResult: KeyTestResult? = null
 )
 
+@Serializable
 enum class KeyTestResult {
     UNTESTED,
     TESTING,
@@ -46,9 +47,9 @@ sealed interface SecurityEvent {
     @Serializable
     data class FailedAttempt(val reason: String) : SecurityEvent
     @Serializable
-    data object BiometricPromptShown : SecurityEvent
+    data class BiometricPromptShown(val unused: Int = 0) : SecurityEvent
     @Serializable
-    data object BiometricSuccess : SecurityEvent
+    data class BiometricSuccess(val unused: Int = 0) : SecurityEvent
     @Serializable
-    data object BiometricFailed : SecurityEvent
+    data class BiometricFailed(val unused: Int = 0) : SecurityEvent
 }
